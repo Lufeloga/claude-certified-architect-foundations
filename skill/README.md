@@ -12,8 +12,9 @@ mkdir -p .claude/skills
 cp skill/ccar-f-practice.skill .claude/skills/
 ```
 
-To have it available in every project instead of this one, copy it to
-`~/.claude/skills/` and it follows you rather than the repository.
+You can also copy it to `~/.claude/skills/` so it is available everywhere. The
+skill reads the item bank from the repository, so if you install it globally,
+either run it from inside your clone or give it the path when it asks.
 
 ## Run
 

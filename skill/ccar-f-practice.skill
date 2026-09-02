@@ -15,9 +15,15 @@ transfers. Offer the coaching mode, but do not make it the default.
 
 ## Step 1 · Load the set
 
-Read `practice-set/questions.json` relative to the repository root. If it is not
-found, look one directory up, then stop and say plainly which path failed. Do
-not fall back to reading `questions.md`, which by design has no answers in it.
+Find the item bank. Look for `questions.json` in this order:
+
+1. `practice-set/questions.json` (you are at the repository root)
+2. `../practice-set/questions.json` (you are inside a subdirectory)
+3. any path the user gave as an argument
+
+If none of those exist, say which paths you tried and ask the user for the path
+to their clone of the repository. Do not guess, and do not fall back to reading
+`questions.md`, which by design contains no answers.
 
 Each item carries: `id`, `scenario`, `scenario_intro`, `domain`, `task`, `stem`,
 `options` (A to D), `key` (a list of letters), `explanations` (one per option),
