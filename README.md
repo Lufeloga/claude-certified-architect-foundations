@@ -35,11 +35,10 @@ your weakest domain to the Frame Map and read the frame that covers it.
 ```bash
 git clone https://github.com/Lufeloga/claude-certified-architect-foundations.git
 cd claude-certified-architect-foundations
-mkdir -p .claude/skills
-cp skill/ccar-f-practice.skill .claude/skills/
+claude
 ```
 
-Then, from Claude Code in that directory:
+The skill ships inside the repository, so there is nothing to install:
 
 ```
 /ccar-f-practice        # 20 items, cold, timed
@@ -74,7 +73,7 @@ is a change the next build reverts.
 ```
 frame-map/      README.md, printable PDF, and the HTML the PDF comes from
 practice-set/   questions.json (source), plus generated MD, HTML and PDF
-skill/          the Claude Code runner
+skill/          notes on the runner; the skill itself is in .claude/skills/
 tools/          build and verification scripts, no dependencies
 ```
 
