@@ -2,7 +2,7 @@
 name: CCAR-F practice runner
 description: Sit the CCAR-F practice set on a timer. Presents items one at a time, withholds all feedback until the end by default, then scores by domain against the published blueprint weights and points at the frame that covers the weakest domain.
 argument-hint: "[item count, e.g. /ccar-f-practice 20; defaults to 20]"
-allowed-tools: Read
+allowed-tools: Read, AskUserQuestion
 ---
 
 # CCAR-F practice runner
@@ -12,6 +12,12 @@ Run the practice set as a cold, timed sitting.
 The default is deliberately austere: no feedback until the end. Immediate
 feedback teaches the item, and a cold run measures whether the reasoning
 transfers. Offer the coaching mode, but do not make it the default.
+
+**Use only Read and AskUserQuestion.** Read the item bank once, keep the queue
+in your own context, and present every item with AskUserQuestion. Do not run
+shell commands, do not write scratch files, and do not re-read the bank between
+items. A sitting that stops for a permission prompt on every question is not a
+sitting, and each of those is avoidable.
 
 ## Step 1 · Load the set
 
@@ -31,17 +37,22 @@ Each item carries: `id`, `scenario`, `scenario_intro`, `domain`, `task`, `stem`,
 
 ## Step 2 · Configure
 
-Ask in a single question set:
+**If the user passed a number as an argument, ask nothing.** Use that count, all
+domains, and feedback at the end, say so in one line, and go straight to the
+first item. Somebody who typed `/ccar-f-practice 10` has already told you what
+they want.
 
-1. **How many items.** Offer 10, 20 (recommended), 30, and the full set. If the
-   user passed a number as an argument, use it and skip this question.
+Only when no argument was given, ask once, as a single question set:
+
+1. **How many items.** Offer 10, 20 (recommended), 30, and the full set.
 2. **Which domains.** Offer all domains (recommended), or one of D1 through D5.
 3. **Feedback.** Offer "at the end" (recommended) and "after each item".
 
 Then build the queue:
 
 - filter by domain if one was chosen
-- shuffle
+- vary the order between runs, for example by starting at a different point in
+  the bank each time; this needs no tool and no randomness source
 - take the requested count
 - when the user asked for all domains and enough items, sample so the domain
   mix approximates the blueprint weights below, rather than taking the first N
@@ -57,8 +68,9 @@ For each item, in order:
    turns a diagnostic into a performance.
 2. Present the scenario intro **only when the scenario changes** from the
    previous item, so it is not repeated ten times.
-3. Ask the question with the four options as choices, labeled A to D, carrying
-   the full option text.
+3. Ask with AskUserQuestion: one question, four options labeled A to D, each
+   option carrying the full text from the bank. One call per item, and nothing
+   else between items.
    - When `multi_answer` is true, say **Select two** above the question and
      accept two selections.
    - When `negative` is true, present the stem exactly as written. Do not add
@@ -71,7 +83,8 @@ For each item, in order:
    and move on with no signal either way.
 
 Never reveal a key before the user has answered that item. Never skip or
-truncate an item mid-run.
+truncate an item mid-run. Never interrupt the run with anything that needs the
+user's approval.
 
 ## Step 4 · Score
 
@@ -128,6 +141,7 @@ D1 27%, D3 20%, D4 20%, D2 18%, D5 15%.
 
 - Keep everything outside the questions themselves short. This is a sitting, not
   a conversation.
+- Read the bank once and never again. Everything after that is in context.
 - Do not coach, hint, or narrate reasoning while items are being answered.
 - Do not editorialize about difficulty before or during the run.
 - If the user abandons partway, score what was answered and say how many items

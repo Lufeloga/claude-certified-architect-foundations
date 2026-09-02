@@ -28,8 +28,16 @@ from inside your clone, or giving it the path when it asks.
 /ccar-f-practice 60     # the full set
 ```
 
-It asks how many items, which domains, and whether you want feedback as you go
-or only at the end.
+Pass a number and it starts immediately with sensible defaults: all domains,
+feedback at the end. Run it bare and it asks those three things once, then runs
+without interrupting you again.
+
+## No prompts mid-sitting
+
+The runner uses two tools only: it reads the item bank once, then presents every
+item as a question. It runs no shell commands and writes no files, so a sitting
+never stops to ask your permission for anything. That is a design constraint,
+not an accident: a timed run interrupted on every item is not a timed run.
 
 ## What it does
 
