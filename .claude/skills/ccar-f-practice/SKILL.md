@@ -1,5 +1,5 @@
 ---
-name: ccar-f-practice
+name: CCAR-F practice runner
 description: Sit the CCAR-F practice set on a timer. Presents items one at a time, withholds all feedback until the end by default, then scores by domain against the published blueprint weights and points at the frame that covers the weakest domain.
 argument-hint: "[item count, e.g. /ccar-f-practice 20; defaults to 20]"
 allowed-tools: Read

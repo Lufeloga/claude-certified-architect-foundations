@@ -6,7 +6,7 @@ domain, and points you at the frame covering your weakest one.
 ## Install
 
 Nothing to install. The skill ships at
-[`.claude/skills/ccar-f-practice.skill`](../.claude/skills/ccar-f-practice.skill),
+[`.claude/skills/ccar-f-practice/SKILL.md`](../.claude/skills/ccar-f-practice/SKILL.md),
 so opening Claude Code inside your clone finds it:
 
 ```bash
@@ -15,7 +15,8 @@ cd claude-certified-architect-foundations
 claude
 ```
 
-To have it everywhere instead, copy that file into `~/.claude/skills/`. The skill
+To have it everywhere instead, copy the whole `ccar-f-practice/` folder into
+`~/.claude/skills/`. The skill
 reads the item bank from this repository, so a global install means running it
 from inside your clone, or giving it the path when it asks.
 
