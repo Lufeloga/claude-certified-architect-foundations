@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CCAR-F Practice Set</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #E9E6DD; --sheet: #F7F5F0; --ink: #1C2024;
+    --ink-soft: #575E66; --ink-faint: #8B9199; --line: #DEDACF;
+    --accent: #135E58; --accent-wash: #E1EDEB;
+    --mono: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #101317; --sheet: #181C21; --ink: #E8E6E1;
+      --ink-soft: #A5ABB3; --ink-faint: #757C85; --line: #2C323A;
+      --accent: #4FB3A7; --accent-wash: #13302D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #101317; --sheet: #181C21; --ink: #E8E6E1;
+    --ink-soft: #A5ABB3; --ink-faint: #757C85; --line: #2C323A;
+    --accent: #4FB3A7; --accent-wash: #13302D;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); line-height: 1.55;
+  }
+  .doc {
+    max-width: 7.6in; margin: 0 auto; background: var(--sheet);
+    border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+    padding: clamp(1.4rem, 4vw, 2.6rem) clamp(1.1rem, 4vw, 2.2rem) 3rem;
+  }
+  h1 { font-family: var(--mono); font-size: 1.9rem; letter-spacing: -.02em; margin: 0 0 .6rem; }
+  h2 {
+    font-family: var(--mono); font-size: 1.05rem; margin: 2.4rem 0 .4rem;
+    padding-top: .8rem; border-top: 2px solid var(--accent); color: var(--accent);
+  }
+  h3 { font-size: .95rem; margin: 1.6rem 0 .5rem; }
+  code { font-family: var(--mono); font-size: .86em; background: var(--accent-wash); padding: .1em .3em; border-radius: 3px; }
+  .lede { color: var(--ink-soft); }
+  .note { color: var(--ink-faint); font-size: .82rem; border-left: 2px solid var(--line); padding-left: .8rem; }
+  .pick { font-family: var(--mono); font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }
+  ol.opts { list-style: none; padding-left: 0; margin: .5rem 0 0; }
+  ol.opts li { margin: .32rem 0; padding-left: 1.9rem; text-indent: -1.9rem; }
+  .ltr { font-family: var(--mono); font-weight: 600; }
+  .q, .ans { break-inside: avoid; page-break-inside: avoid; }
+  .meta { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); }
+  .why { border-left: 2px solid var(--accent); padding-left: .8rem; margin-top: .6rem; }
+  .anchor { font-size: .74rem; color: var(--ink-faint); }
+  @page { size: 8.5in 11in; margin: 0.62in 0.7in; }
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; }
+    .doc { max-width: none; border: 0; padding: 0; background: #fff; }
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+<h1>CCAR-F Practice Set</h1>
+<p class="lede">60 items across the six scenarios in the published exam blueprint, with answers and explanations at the end.</p>
+<p class="note">Independent study material. Not affiliated with, endorsed by, or reviewed by Anthropic. It reproduces no exam content: every item was written from the publicly published task statements in the official Exam Guide.</p>
+<h2>Part 1 &middot; Questions</h2>
+<h3>Scenario: Customer Support Resolution Agent</h3>
+<p class="lede">You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (<code>get_customer</code>, <code>lookup_order</code>, <code>process_refund</code>, <code>escalate_to_human</code>), targeting 80%+ first-contact resolution.</p>
+<div class="q">
+<p><b>1.</b> The agent sometimes stops mid-task, closing the conversation with a line like "I'll look that up now." Every tool the agent called returned successfully, and the loop exits as soon as the model produces text. What is the flaw?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> End the loop on <code>end_turn</code> rather than on the presence of assistant text.</li>
+<li><span class="ltr">B.</span> Raise <code>maxTurns</code>, which is capping the loop before the task can finish.</li>
+<li><span class="ltr">C.</span> Instruct the model to complete all tool work before producing narration.</li>
+<li><span class="ltr">D.</span> Append each tool result to the history so the model tracks what it did.</li>
+</ol></div>
+<div class="q">
+<p><b>2.</b> Policy requires identity verification with <code>get_customer</code> before any refund executes. The system prompt states this explicitly and was reviewed for clarity, and 3% of transcripts still show <code>process_refund</code> running first. What should be done?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Add explicit ordering language and two worked examples to the system prompt.</li>
+<li><span class="ltr">B.</span> Block <code>process_refund</code> programmatically until <code>get_customer</code> returns an id.</li>
+<li><span class="ltr">C.</span> Force <code>get_customer</code> with <code>tool_choice</code> on every request in the conversation.</li>
+<li><span class="ltr">D.</span> Route refunds to a subagent invoked only after verification has completed.</li>
+</ol></div>
+<div class="q">
+<p><b>3.</b> The agent escalates mid-process to a human specialist who works from a separate queue and has no access to the conversation transcript. What should the handoff contain?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> The full transcript, so the specialist can form an independent judgment.</li>
+<li><span class="ltr">B.</span> The last three messages plus a read on the customer's current tone.</li>
+<li><span class="ltr">C.</span> A session link the specialist can open to review the case directly.</li>
+<li><span class="ltr">D.</span> Customer id, root cause, refund amount, and the recommended action.</li>
+</ol></div>
+<div class="q">
+<p><b>4.</b> Three MCP tools return order status as a Unix timestamp, an ISO 8601 string, and a numeric code respectively. All three tools are healthy and their outputs are correct. The agent's reasoning about which event came first is inconsistent. Where does normalization belong?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> In each tool's description, documenting the timestamp format it returns.</li>
+<li><span class="ltr">B.</span> In the system prompt, as an explicit rule for comparing the three formats.</li>
+<li><span class="ltr">C.</span> In a <code>PreToolUse</code> hook that rewrites each request before it is dispatched.</li>
+<li><span class="ltr">D.</span> In a <code>PostToolUse</code> hook, before the model reasons over the returned values.</li>
+</ol></div>
+<div class="q">
+<p><b>5.</b> A specialist subagent receives a prompt naming its task and the customer id. It completes every task it is given without error, yet its resolutions repeatedly violate constraints the customer stated earlier in the conversation. What explains this?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Subagent context is isolated, so constraints must be restated in its prompt.</li>
+<li><span class="ltr">B.</span> The coordinator lacks <code>Task</code> in <code>allowedTools</code>, so the delegation is partial.</li>
+<li><span class="ltr">C.</span> The coordinator's context degraded before it composed the delegation prompt.</li>
+<li><span class="ltr">D.</span> Subagents retain parent memory only for the turn in which they are spawned.</li>
+</ol></div>
+<div class="q">
+<p><b>6.</b> You return to an investigation session paused five days ago. Of its 26 cached tool results, 24 are order statuses that have since changed. The reasoning the session recorded about the customer's entitlement is unaffected by those changes. What do you do?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Resume the session and flag in each response that statuses may be stale.</li>
+<li><span class="ltr">B.</span> Start fresh, inject a summary of the reasoning, and re-fetch the statuses.</li>
+<li><span class="ltr">C.</span> Resume the session and selectively re-fetch the 24 statuses that changed.</li>
+<li><span class="ltr">D.</span> Fork the session so both the old and the new investigation stay available.</li>
+</ol></div>
+<div class="q">
+<p class="pick">Select two</p>
+<p><b>7.</b> Which two statements correctly describe <code>tool_choice</code>?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Setting <code>any</code> forces a tool call but lets the model choose which one.</li>
+<li><span class="ltr">B.</span> Forcing one tool on every request prevents a final text answer.</li>
+<li><span class="ltr">C.</span> Setting <code>auto</code> guarantees the model calls at least one tool per turn.</li>
+<li><span class="ltr">D.</span> A forced tool selection persists for the remainder of the conversation.</li>
+</ol></div>
+<div class="q">
+<p><b>8.</b> Before answering entitlement questions the agent calls <code>list_plans</code> to see what exists, then <code>get_plan</code> for the one it needs. <code>list_plans</code> runs in nearly every conversation and the catalog changes twice a year. An engineer proposes caching its response. What is the better approach?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Cache the response, since the catalog changes only twice a year.</li>
+<li><span class="ltr">B.</span> Merge the two tools so a single call returns catalog and plan.</li>
+<li><span class="ltr">C.</span> Expose the plan catalog as an MCP resource the agent can consult.</li>
+<li><span class="ltr">D.</span> Sharpen the description so <code>list_plans</code> is called only when needed.</li>
+</ol></div>
+<div class="q">
+<p><b>9.</b> A <code>run_report</code> tool takes a free-text spec and returns a rendered table, a JSON object, or prose depending on what was asked. Its description is thorough and accurate, and the tool is selected correctly every time. Downstream consumers fail on 20% of calls. What is the correct fix?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Add an enum to the spec parameter listing the supported report types.</li>
+<li><span class="ltr">B.</span> Split it into purpose-specific tools with declared return shapes.</li>
+<li><span class="ltr">C.</span> Post-process the output into one shape before consumers receive it.</li>
+<li><span class="ltr">D.</span> Rename it and document the varying return shape in the description.</li>
+</ol></div>
+<div class="q">
+<p><b>10.</b> Which is the weakest basis for escalating a conversation to a human?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> The customer has explicitly asked to speak with a person.</li>
+<li><span class="ltr">B.</span> The request falls outside the agent's documented authority.</li>
+<li><span class="ltr">C.</span> The agent reports low confidence in the answer it produced.</li>
+<li><span class="ltr">D.</span> Three turns have passed with no progress on the issue.</li>
+</ol></div>
+<h3>Scenario: Code Generation with Claude Code</h3>
+<p class="lede">You are configuring Claude Code for a team that shares one repository.</p>
+<div class="q">
+<p><b>11.</b> Conventions for database migrations apply only when someone edits files under <code>migrations/</code>. They must load without anyone invoking them, and they should not occupy context when the work is elsewhere. Where do they belong?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> In a skill under <code>.claude/skills/</code> described as covering migrations.</li>
+<li><span class="ltr">B.</span> In the project <code>CLAUDE.md</code>, under a clearly marked migrations heading.</li>
+<li><span class="ltr">C.</span> In a rules file with a <code>paths</code> glob that matches <code>migrations/</code>.</li>
+<li><span class="ltr">D.</span> In a <code>.claude/commands/</code> command run before touching a migration.</li>
+</ol></div>
+<div class="q">
+<p><b>12.</b> The team has a nine-step release procedure run about twice a month, and a file naming convention that applies to every file in the repository. Both are currently pasted into chat by hand. How should they be handled?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> The release procedure as a skill, the naming convention in <code>CLAUDE.md</code>.</li>
+<li><span class="ltr">B.</span> Both as skills, so that neither one loads until it becomes relevant.</li>
+<li><span class="ltr">C.</span> The release procedure in <code>CLAUDE.md</code>, the naming convention as a rule.</li>
+<li><span class="ltr">D.</span> The release procedure as a command, the naming convention as a skill.</li>
+</ol></div>
+<div class="q">
+<p><b>13.</b> An engineer wants her personal preferences applied in every repository she works in, while the team's conventions must reach everyone who clones this one. Which pair is correct?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> <code>~/.claude/config.json</code> for hers, the repository <code>CLAUDE.md</code> for the team.</li>
+<li><span class="ltr">B.</span> <code>.claude/settings.yaml</code> for hers, the <code>.claude/rules/</code> directory for the team.</li>
+<li><span class="ltr">C.</span> The repository <code>CLAUDE.md</code> for both, with hers in a clearly marked section.</li>
+<li><span class="ltr">D.</span> <code>~/.claude/CLAUDE.md</code> for hers, the repository <code>CLAUDE.md</code> for the team.</li>
+</ol></div>
+<div class="q">
+<p><b>14.</b> A developer asks for a fix to a null dereference in one utility function. She has the stack trace and the failing input, and the function has no other callers under change. What is the best first step?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Enter plan mode so the change is scoped before any edit is made.</li>
+<li><span class="ltr">B.</span> Make the fix directly and review the resulting diff with her.</li>
+<li><span class="ltr">C.</span> Write a failing test first and iterate on it until it passes.</li>
+<li><span class="ltr">D.</span> Explore the function's call sites before changing anything at all.</li>
+</ol></div>
+<div class="q">
+<p><b>15.</b> A team is adding rate limiting to a service for the first time. Nobody has worked with it before, and when asked what behavior they want they are unsure what they even need to specify. Which approach fits best?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Supply input and output examples of limited and unlimited requests.</li>
+<li><span class="ltr">B.</span> Enter plan mode so the design is reviewed before implementation.</li>
+<li><span class="ltr">C.</span> Have the agent ask questions that surface what they have not considered.</li>
+<li><span class="ltr">D.</span> Implement a first version directly and refine it once the gaps appear.</li>
+</ol></div>
+<div class="q">
+<p><b>16.</b> Two hours into a refactor the agent begins citing patterns typical of such services rather than what is in this repository, and repeats work it already completed. The code it produced earlier in the session was correct. What should be done?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Move to a model configuration with a larger context window.</li>
+<li><span class="ltr">B.</span> Clear the context and restart with what has been learned so far.</li>
+<li><span class="ltr">C.</span> Persist the refactor state to a scratchpad and work from that file.</li>
+<li><span class="ltr">D.</span> Summarize the session so far and continue in the same session.</li>
+</ol></div>
+<div class="q">
+<p><b>17.</b> A code review agent produces a long report. Reviewers act on the first and last sections and consistently miss issues in the middle, including severe ones. The findings themselves have been verified as accurate. What addresses this?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Drop findings below a severity threshold so the report is shorter.</li>
+<li><span class="ltr">B.</span> Split the report into one comment attached to each affected file.</li>
+<li><span class="ltr">C.</span> Append a summary at the end so that nothing goes unnoticed.</li>
+<li><span class="ltr">D.</span> Lead with the key findings and add headers that make it navigable.</li>
+</ol></div>
+<div class="q">
+<p><b>18.</b> You must assess whether a deprecation affects any of 11 packages, each around 80 files with its own conventions. The combined relevant code runs to several times your context window. Which approach fits?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Grep the symbol across all packages and read the lines around each hit.</li>
+<li><span class="ltr">B.</span> Map each package from its imports before reading any implementation.</li>
+<li><span class="ltr">C.</span> Read the three largest packages in depth and generalize from those.</li>
+<li><span class="ltr">D.</span> Delegate one scoped subagent per package, each returning call sites.</li>
+</ol></div>
+<div class="q">
+<p class="pick">Select two</p>
+<p><b>19.</b> A session is approaching its context limit. Tool outputs carry more than forty fields each, of which the agent uses four, and the conversation spans several topics that are already resolved. Which two actions are appropriate?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Prune each tool output to the four fields the agent actually uses.</li>
+<li><span class="ltr">B.</span> Switch to a model configuration with a larger context window.</li>
+<li><span class="ltr">C.</span> Summarize the resolved topics, keeping the active thread verbatim.</li>
+<li><span class="ltr">D.</span> Start a new session so that the context is clean from this point.</li>
+</ol></div>
+<div class="q">
+<p><b>20.</b> Which of these is not an appropriate response to a session approaching its context limit?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Summarizing the portions of the conversation that are already resolved.</li>
+<li><span class="ltr">B.</span> Pruning verbose tool outputs down to the fields the agent actually uses.</li>
+<li><span class="ltr">C.</span> Persisting the working state externally and continuing from that file.</li>
+<li><span class="ltr">D.</span> Clearing the context and starting over without carrying a summary.</li>
+</ol></div>
+<h3>Scenario: Multi-Agent Research System</h3>
+<p class="lede">You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.</p>
+<div class="q">
+<p><b>21.</b> The coordinator spawns the same five subagents for every query. Narrow questions come back with overlapping material, and broad ones leave whole areas uncovered. Each subagent completes its assignment successfully. What is the root cause?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> The subagents cannot see each other's work, so overlap goes unnoticed.</li>
+<li><span class="ltr">B.</span> The decomposition is fixed rather than derived from the query itself.</li>
+<li><span class="ltr">C.</span> The synthesis step has no criteria for resolving overlapping claims.</li>
+<li><span class="ltr">D.</span> Five full reports exceed what the coordinator can hold at synthesis.</li>
+</ol></div>
+<div class="q">
+<p><b>22.</b> After synthesis, the report leaves two of the original sub-questions unanswered. The team wants the system to close those gaps itself rather than shipping an incomplete report. Which design fits?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Raise the number of subagents so more ground is covered on the first pass.</li>
+<li><span class="ltr">B.</span> Have the synthesis subagent flag each gap so the reader knows what is missing.</li>
+<li><span class="ltr">C.</span> Score coverage against the sub-questions, re-delegate, and re-synthesize.</li>
+<li><span class="ltr">D.</span> Have each subagent verify its own coverage before it returns to the coordinator.</li>
+</ol></div>
+<div class="q">
+<p><b>23.</b> The coordinator needs four independent literature searches before drafting. It currently spawns them one per turn, each waiting for the previous to return, and latency is roughly four times what the team expected. What should change?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Build one composite search tool that runs the four searches internally.</li>
+<li><span class="ltr">B.</span> Have the first subagent emit <code>Task</code> calls for the other three beneath it.</li>
+<li><span class="ltr">C.</span> Emit the four <code>Task</code> calls within a single coordinator response.</li>
+<li><span class="ltr">D.</span> Keep the sequence and narrow each subagent's scope to shorten it.</li>
+</ol></div>
+<div class="q">
+<p><b>24.</b> The coordinator produces a written plan naming which subagents should run, then answers the question itself with no subagent executing. The subagent definitions are correct and their prompts have been reviewed. What is the most likely cause?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> <code>Task</code> is absent from the coordinator's allowed tools, so it cannot spawn.</li>
+<li><span class="ltr">B.</span> The system prompt frames delegation as guidance rather than as instruction.</li>
+<li><span class="ltr">C.</span> The subagent descriptions do not make clear when each of them applies.</li>
+<li><span class="ltr">D.</span> <code>maxTurns</code> is too low for the delegation round trip to complete in time.</li>
+</ol></div>
+<div class="q">
+<p><b>25.</b> The coordinator must produce a comparative market report on three companies. Which step cannot run in parallel with the others?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Retrieving the last four quarterly filings for each of the three companies.</li>
+<li><span class="ltr">B.</span> Searching recent news coverage for each of the three companies by name.</li>
+<li><span class="ltr">C.</span> Collecting analyst ratings for the three from two subscription sources.</li>
+<li><span class="ltr">D.</span> Writing the assessment that weighs the three companies against each other.</li>
+</ol></div>
+<div class="q">
+<p><b>26.</b> The coordinator exposes <code>analyze_content</code> for retrieved web pages and <code>analyze_document</code> for uploaded files. Each description is accurate about its own tool and neither is malformed. Traces show uploaded PDFs routed to <code>analyze_content</code> in 38% of cases, and both invoked on the same item. What is the most effective fix?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Expand <code>analyze_content</code>'s description until it excludes uploaded files.</li>
+<li><span class="ltr">B.</span> Merge the two into one tool that branches internally on the input type.</li>
+<li><span class="ltr">C.</span> Restrict <code>analyze_document</code> to the document analysis subagent's tool set.</li>
+<li><span class="ltr">D.</span> Rename both and have each description say when the other one applies.</li>
+</ol></div>
+<div class="q">
+<p><b>27.</b> The synthesis subagent has no search tools by design. Review shows that in 15% of reports it needed to confirm a single figure, and a small share of those cases require reconciling sources that contradict each other. What is the most effective change?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Give it the full <code>web_search</code> tool set the research subagents use.</li>
+<li><span class="ltr">B.</span> Give it a scoped <code>verify_fact</code> tool and route contradictions upward.</li>
+<li><span class="ltr">C.</span> Keep its tool set as it is and have the coordinator verify each figure.</li>
+<li><span class="ltr">D.</span> Move verification into the report step that runs after synthesis.</li>
+</ol></div>
+<div class="q">
+<p class="pick">Select two</p>
+<p><b>28.</b> A document analysis subagent hits several failures in one run: a source times out and succeeds on retry, another returns a persistent authorization error, and a third returns zero matches. Which two responses follow the guidance?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Return <code>isError: false</code> for the authorization failure, since nothing came back.</li>
+<li><span class="ltr">B.</span> Report the zero-match source as a valid empty result rather than an error.</li>
+<li><span class="ltr">C.</span> Return <code>isError</code> with a category, a retryable flag, and a readable cause.</li>
+<li><span class="ltr">D.</span> Return a uniform <code>source unavailable</code> status so all failures look alike.</li>
+</ol></div>
+<div class="q">
+<p><b>29.</b> The team wants to connect a widely used issue tracker with a maintained community MCP server. A developer proposes writing their own instead, to keep full control. What do you tell them?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Write the custom server, since control over a central integration is worth it.</li>
+<li><span class="ltr">B.</span> Write the custom server, because the tracker touches every team process.</li>
+<li><span class="ltr">C.</span> Wrap the community server in a custom one to add team-specific behavior.</li>
+<li><span class="ltr">D.</span> Use the community server and keep custom builds for team-specific work.</li>
+</ol></div>
+<div class="q">
+<p><b>30.</b> Two sources report headcount for the same company: a regulatory filing dated March states 4,200, and a press article dated September states 3,850. Both sources are credible. The report must be defensible to the client. What should the agent do?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Report both figures with their sources and their collection dates attached.</li>
+<li><span class="ltr">B.</span> Report the filing's figure, since regulatory filings outrank press coverage.</li>
+<li><span class="ltr">C.</span> Report the September figure, since the later reading supersedes the earlier.</li>
+<li><span class="ltr">D.</span> Report the average of the two, with a note describing the range observed.</li>
+</ol></div>
+<h3>Scenario: Developer Productivity with Claude</h3>
+<p class="lede">You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.</p>
+<div class="q">
+<p><b>31.</b> A job must run against every component test file in the monorepo. The convention is a <code>.test.tsx</code> suffix, three legacy directories still use <code>.spec.tsx</code>, and some test files import shared helpers while others define their own. What produces the complete list most reliably?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Grep for <code>describe(</code> and <code>it(</code>, collecting every file that matches.</li>
+<li><span class="ltr">B.</span> Glob for <code>**/*.test.tsx</code> and <code>**/*.spec.tsx</code>, then merge the two.</li>
+<li><span class="ltr">C.</span> Grep for imports of the shared helpers and collect those files.</li>
+<li><span class="ltr">D.</span> Glob for <code>**/*.tsx</code> and read each file to decide what it is.</li>
+</ol></div>
+<div class="q">
+<p><b>32.</b> A configuration constant appears in seven places in one file, and only the occurrence inside the staging block should change. The <code>Edit</code> call fails because the target text is not unique. What do you do?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Extend the search text with surrounding lines until the match is unique.</li>
+<li><span class="ltr">B.</span> Use a replace-all edit and then revert the six unintended changes.</li>
+<li><span class="ltr">C.</span> Read the file, change the intended occurrence, and write it back whole.</li>
+<li><span class="ltr">D.</span> Append the corrected constant at the end so the later value wins.</li>
+</ol></div>
+<div class="q">
+<p><b>33.</b> You need every call site of <code>validateToken</code>, which is exported from <code>auth/core.ts</code> and re-exported under different names by three wrapper modules. The wrappers themselves are documented and correct. What is the correct first move?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Grep for <code>validateToken</code> repository-wide and compile the matches found.</li>
+<li><span class="ltr">B.</span> Glob for the files under <code>auth/</code> and read each one of them in turn.</li>
+<li><span class="ltr">C.</span> Read the library and wrappers for every exported name, then search each.</li>
+<li><span class="ltr">D.</span> Grep for imports of <code>auth/core</code> and trace outward from those files.</li>
+</ol></div>
+<div class="q">
+<p><b>34.</b> You must understand how retry backoff is reached in an unfamiliar 28-file service before changing it. The whole service fits comfortably inside your context window. Which approach fits best?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Read all 28 files in order so nothing in the service is missed.</li>
+<li><span class="ltr">B.</span> Glob for the files whose names reference retry or backoff logic.</li>
+<li><span class="ltr">C.</span> Delegate the survey to a subagent and work from the report it returns.</li>
+<li><span class="ltr">D.</span> Grep the retry entry points, read those, and follow their imports.</li>
+</ol></div>
+<div class="q">
+<p><b>35.</b> Two engineers working in the same repository, on the same version, get noticeably different behavior from the assistant. Both have pulled the latest commit. What is the first step to diagnose it?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Check which memory files each session has actually loaded.</li>
+<li><span class="ltr">B.</span> Compare their user-level settings files line by line for drift.</li>
+<li><span class="ltr">C.</span> Have both re-clone the repository to rule out a stale checkout.</li>
+<li><span class="ltr">D.</span> Consolidate every project convention into one <code>CLAUDE.md</code> file.</li>
+</ol></div>
+<div class="q">
+<p><b>36.</b> A review across 40 changed files produces findings that contradict one another and misses issues in the middle of the set. The review criteria themselves have been validated on smaller changes. How should the review be decomposed?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Run the same review once more against a more capable model tier.</li>
+<li><span class="ltr">B.</span> Review only the files carrying the largest diffs in the change set.</li>
+<li><span class="ltr">C.</span> Ask the model to re-read the full set before it states conclusions.</li>
+<li><span class="ltr">D.</span> Run per-file local passes plus one separate cross-file integration pass.</li>
+</ol></div>
+<div class="q">
+<p><b>37.</b> Which of these does not describe how the agentic loop operates?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> It continues on <code>tool_use</code> and terminates when <code>end_turn</code> is returned.</li>
+<li><span class="ltr">B.</span> Tool results are appended to the history sent with the next request.</li>
+<li><span class="ltr">C.</span> The program reads the assistant's text to judge whether work is done.</li>
+<li><span class="ltr">D.</span> The model decides at each step whether to call a tool or to answer.</li>
+</ol></div>
+<div class="q">
+<p><b>38.</b> Policy states that deletions above a threshold must never execute without a recorded approval. Deletions can be requested at any point in a session, and the current prompt-based rule is followed in the large majority of cases. Which mechanism enforces this?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> A <code>PreToolUse</code> hook that blocks the call and routes it to approval.</li>
+<li><span class="ltr">B.</span> A <code>PostToolUse</code> hook that records the approval once deletion completes.</li>
+<li><span class="ltr">C.</span> <code>tool_choice</code> forcing the approval tool on the turn after the request.</li>
+<li><span class="ltr">D.</span> A system prompt rule stating the threshold, plus two worked examples.</li>
+</ol></div>
+<div class="q">
+<p class="pick">Select two</p>
+<p><b>39.</b> Which two statements are correct about subagent configuration?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> The <code>allowedTools</code> list restricts which tools the subagent may call.</li>
+<li><span class="ltr">B.</span> A subagent inherits the coordinator's conversation history automatically.</li>
+<li><span class="ltr">C.</span> A subagent's <code>systemPrompt</code> is inherited unless it is explicitly set.</li>
+<li><span class="ltr">D.</span> A coordinator can spawn subagents only if <code>Task</code> is among its tools.</li>
+</ol></div>
+<div class="q">
+<p><b>40.</b> You want to compare two refactoring approaches that both start from the same completed codebase analysis, and you expect to revisit both branches later. What fits?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Fork the session so each approach branches from the shared baseline.</li>
+<li><span class="ltr">B.</span> Resume the analysis session twice in succession by its session name.</li>
+<li><span class="ltr">C.</span> Start two fresh sessions, injecting the analysis summary into each.</li>
+<li><span class="ltr">D.</span> Continue the most recent session once the first approach is finished.</li>
+</ol></div>
+<h3>Scenario: Claude Code for Continuous Integration</h3>
+<p class="lede">You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.</p>
+<div class="q">
+<p><b>41.</b> A nightly job must run the assistant without any interaction and emit machine-readable findings that a later step posts automatically as inline comments. Which invocation is correct?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Set <code>CLAUDE_HEADLESS=1</code> and parse the job's standard output.</li>
+<li><span class="ltr">B.</span> Run with <code>--batch</code> and read the aggregated results file it writes.</li>
+<li><span class="ltr">C.</span> Run with <code>-p</code>, <code>--output-format json</code>, and <code>--json-schema</code>.</li>
+<li><span class="ltr">D.</span> Run interactively in the container and capture the terminal output.</li>
+</ol></div>
+<div class="q">
+<p><b>42.</b> The pipeline reviews several pull requests within one run, and reviewers notice comments on one pull request that reference code belonging to another. Each review on its own is accurate. What should the pipeline do?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Clear the context between pull requests inside the same session.</li>
+<li><span class="ltr">B.</span> Run each pull request in a session isolated from the others.</li>
+<li><span class="ltr">C.</span> Reduce how many pull requests are handled in a single run.</li>
+<li><span class="ltr">D.</span> Instruct the agent to consider only the current diff each time.</li>
+</ol></div>
+<div class="q">
+<p><b>43.</b> When the review re-runs after new commits, it posts duplicate comments on issues that were already raised and discussed in the thread. The findings themselves are accurate. What should change?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Supply the prior findings and ask for new or unaddressed issues only.</li>
+<li><span class="ltr">B.</span> Review only the diff introduced by the most recent commit each time.</li>
+<li><span class="ltr">C.</span> Deduplicate the comments after they have been posted to the thread.</li>
+<li><span class="ltr">D.</span> Run the review a single time, when the pull request is first opened.</li>
+</ol></div>
+<div class="q">
+<p><b>44.</b> Generated tests frequently duplicate scenarios the existing suite already covers. The duplicated tests are themselves correct and they pass. What addresses this?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Ask for a smaller number of generated tests on each run.</li>
+<li><span class="ltr">B.</span> Filter out duplicates after the generation step completes.</li>
+<li><span class="ltr">C.</span> Generate tests only for files that currently have no coverage.</li>
+<li><span class="ltr">D.</span> Provide the existing test files in context during generation.</li>
+</ol></div>
+<div class="q">
+<p><b>45.</b> The tests the CI job generates are low value: trivial assertions, the wrong fixtures, and coverage of paths nobody cares about. The job invocation and output handling are both correct. What is the most effective change?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Document the standards, what makes a test valuable, and the fixtures.</li>
+<li><span class="ltr">B.</span> Add few-shot examples of well-written tests to the prompt used in CI.</li>
+<li><span class="ltr">C.</span> Raise the model tier the continuous integration job runs against.</li>
+<li><span class="ltr">D.</span> Have a second instance review the generated tests before they land.</li>
+</ol></div>
+<div class="q">
+<p><b>46.</b> A module has a suite of assertions that already define its expected behavior, including its edge cases, and the implementation is now being written against them. Which refinement technique fits?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Iterate by sharing the failing tests until the suite passes.</li>
+<li><span class="ltr">B.</span> Provide two or three input and output examples to work from.</li>
+<li><span class="ltr">C.</span> Have the agent interview the team about the module's design.</li>
+<li><span class="ltr">D.</span> Enter plan mode before any implementation code is written.</li>
+</ol></div>
+<div class="q">
+<p><b>47.</b> The pipeline runs two workloads. A pre-merge check blocks the merge and requires the agent to call repository tools while it reasons. A weekly audit of the whole repository is read on Monday mornings and is submitted the preceding Friday. How should each be run?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Both with the batch API, since both are bounded and repeatable jobs.</li>
+<li><span class="ltr">B.</span> Both synchronously, because batch carries no guaranteed latency floor.</li>
+<li><span class="ltr">C.</span> Pre-merge with batch at pull request open, and the audit synchronously.</li>
+<li><span class="ltr">D.</span> Pre-merge synchronously, and the weekly audit with the batch API.</li>
+</ol></div>
+<div class="q">
+<p><b>48.</b> The team wants to catch subtle defects in code the same pipeline generated earlier in the run. Which approach is least effective?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Reviewing in a separate instance that lacks the generation context.</li>
+<li><span class="ltr">B.</span> Having the generating session review its own output while thinking.</li>
+<li><span class="ltr">C.</span> Splitting the review into per-file passes plus a cross-file pass.</li>
+<li><span class="ltr">D.</span> Having the review self-report confidence per finding for triage.</li>
+</ol></div>
+<div class="q">
+<p><b>49.</b> The review reports 14 findings per pull request and developers act on 4. The noise is concentrated in style-adjacent observations about patterns that are established conventions in this repository. A developer proposes adding "only report high-confidence issues" to the prompt. What is the most effective change?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Add the proposed instruction, since it directly targets over-reporting.</li>
+<li><span class="ltr">B.</span> Have the agent critique its findings and drop the ones it cannot justify.</li>
+<li><span class="ltr">C.</span> Name explicitly which issue classes to report and which ones to skip.</li>
+<li><span class="ltr">D.</span> Attach a confidence score to each finding and suppress the low ones.</li>
+</ol></div>
+<div class="q">
+<p class="pick">Select two</p>
+<p><b>50.</b> The continuous integration job must decide automatically whether to block a merge. Which two approaches produce output the pipeline can rely on?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Ask for JSON in the prompt and parse the model's text output.</li>
+<li><span class="ltr">B.</span> Have the agent write prose and search it for a verdict keyword.</li>
+<li><span class="ltr">C.</span> Define a tool whose input is the verdict schema and read <code>tool_use</code>.</li>
+<li><span class="ltr">D.</span> Run headless with <code>--output-format json</code> and a declared verdict schema.</li>
+</ol></div>
+<h3>Scenario: Structured Data Extraction</h3>
+<p class="lede">You are building a structured data extraction pipeline that converts documents into JSON records.</p>
+<div class="q">
+<p><b>51.</b> The pipeline uses tool use with a strict JSON schema, and the team confirms that schema violations and JSON syntax errors no longer occur. Operations reports that 8% of records carry the purchase order number in the invoice number field, and 5% have line items that do not sum to the declared total. What is the most likely cause?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Field descriptions do not distinguish the two identifier fields clearly.</li>
+<li><span class="ltr">B.</span> The values are semantically wrong, which a schema has no way to detect.</li>
+<li><span class="ltr">C.</span> Source layouts vary, so few-shot examples are needed for consistency.</li>
+<li><span class="ltr">D.</span> The model is fabricating values for fields the documents do not contain.</li>
+</ol></div>
+<div class="q">
+<p><b>52.</b> A contract schema includes <code>governing_law</code>, <code>renewal_term</code>, and <code>liability_cap</code>, and 30% of contracts genuinely omit at least one of the three. Which approach is least appropriate?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Keeping all three required so every record arrives downstream complete.</li>
+<li><span class="ltr">B.</span> Declaring them nullable and instructing a null when the clause is absent.</li>
+<li><span class="ltr">C.</span> Adding an "unclear" value for clauses present but ambiguously worded.</li>
+<li><span class="ltr">D.</span> Flagging records that contain nulls so a reviewer confirms the omission.</li>
+</ol></div>
+<div class="q">
+<p><b>53.</b> A product schema uses an enum of eight categories that covers 94% of listings. The remainder are genuinely novel products, and a separate handful of listings are worded too vaguely to categorize at all. What should the schema add?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Forty categories in place of eight, so novel products find a match.</li>
+<li><span class="ltr">B.</span> A nullable category field that the model leaves empty when unsure.</li>
+<li><span class="ltr">C.</span> A free-text category with a mapping table maintained downstream.</li>
+<li><span class="ltr">D.</span> An "other" value with a detail field, plus an "unclear" value.</li>
+</ol></div>
+<div class="q">
+<p><b>54.</b> Three document types arrive through the same pipeline, each with its own extraction tool and schema. The type is not known until the document has been read, and every document must produce a structured record. Which <code>tool_choice</code> setting fits?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> <code>auto</code>, so the model can decide whether extraction is needed at all.</li>
+<li><span class="ltr">B.</span> Forced selection on the tool for the most common document type.</li>
+<li><span class="ltr">C.</span> <code>any</code>, so a tool must be called and the model picks the schema.</li>
+<li><span class="ltr">D.</span> No tool at all, deciding the schema in code before making the call.</li>
+</ol></div>
+<div class="q">
+<p><b>55.</b> Validation fails on two groups. In one, <code>effective_date</code> returns as <code>03/04/2026</code> where ISO 8601 is expected. In the other, <code>counterparty_registration</code> is empty because it appears only in an annex that was never part of the input. The team raises the retry limit with validation feedback attached. What will that achieve?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> It resolves both groups, since retry with feedback is the standard remedy.</li>
+<li><span class="ltr">B.</span> It fixes the dates and pushes the model to invent registration numbers.</li>
+<li><span class="ltr">C.</span> It resolves neither, since retries only address transient API failures.</li>
+<li><span class="ltr">D.</span> It fixes the registration group by forcing a closer read of the source.</li>
+</ol></div>
+<div class="q">
+<p><b>56.</b> Discrepancies between a document's stated total and its itemized amounts must surface before records reach the ledger. The extraction itself is schema-compliant. Which design does that?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Extract a calculated total beside the stated one and flag any difference.</li>
+<li><span class="ltr">B.</span> Add a required boolean the model sets after checking its own arithmetic.</li>
+<li><span class="ltr">C.</span> Restrict the total field in the schema to two-decimal numeric values.</li>
+<li><span class="ltr">D.</span> Retry the extraction whenever the ledger rejects an incoming record.</li>
+</ol></div>
+<div class="q">
+<p><b>57.</b> Research papers cite sources in two ways: inline in the body, or gathered in a bibliography. Extraction of the citation fields is consistent within each style but differs between them, and the schema is satisfied in both cases. What addresses this?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Tighten the citation field definitions in the extraction schema.</li>
+<li><span class="ltr">B.</span> Post-process the extracted citations into one common shape.</li>
+<li><span class="ltr">C.</span> Retry extraction with validation feedback when the style differs.</li>
+<li><span class="ltr">D.</span> Give few-shot examples of correct extraction from both structures.</li>
+</ol></div>
+<div class="q">
+<p class="pick">Select two</p>
+<p><b>58.</b> A batch of 12,000 documents returns with 400 failures caused by exceeding the context limit. A 50,000-document run is planned for next month. Which two actions are appropriate?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Split the coming run into five batches so that failures stay contained.</li>
+<li><span class="ltr">B.</span> Refine the prompt on a sample set before the 50,000-document run.</li>
+<li><span class="ltr">C.</span> Resubmit the full batch with chunking applied to every document.</li>
+<li><span class="ltr">D.</span> Resubmit only the failures, keyed by <code>custom_id</code>, once chunked.</li>
+</ol></div>
+<div class="q">
+<p><b>59.</b> Before removing human review for one document type, the team measures 96% field-level accuracy across all document types combined, which clears the agreed threshold. What should govern the decision?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> The 96% figure, since it already exceeds the threshold the team agreed.</li>
+<li><span class="ltr">B.</span> Accuracy measured on that document type alone, which the aggregate hides.</li>
+<li><span class="ltr">C.</span> The agent's self-reported confidence on that type over a sampling window.</li>
+<li><span class="ltr">D.</span> The overall rate at which reviewers currently change the agent's output.</li>
+</ol></div>
+<div class="q">
+<p><b>60.</b> An extraction cannot determine a value because the source wording is genuinely ambiguous, and the downstream system expects the field to be populated. What should the pipeline do?</p>
+<ol class="opts">
+<li><span class="ltr">A.</span> Return the most likely reading, with a note recording the ambiguity.</li>
+<li><span class="ltr">B.</span> Return the designated "unclear" value and flag the record for review.</li>
+<li><span class="ltr">C.</span> Leave the field empty and let the downstream system decide what to do.</li>
+<li><span class="ltr">D.</span> Retry the extraction until it produces a determinate, populated value.</li>
+</ol></div>
+<h2>Part 2 &middot; Answers and Explanations</h2>
+<div class="ans">
+<p><b>1. Correct answer: A</b> <span class="meta">D1 &middot; Task 1.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> The stop signal is structural, and a single turn can carry both text and a <code>tool_use</code> block. Treating text as completion truncates work the model intended to continue.</li>
+<li><span class="ltr">&times; B.</span> An iteration cap is a safety fuse, never the primary stopping mechanism; the loop here is ending early by design, not by exhaustion.</li>
+<li><span class="ltr">&times; C.</span> Prose cannot repair a mechanical termination condition that fires before the model is consulted again.</li>
+<li><span class="ltr">&times; D.</span> Dropping tool results produces an agent that loses track of its work, not one that halts while announcing an intention.</li>
+</ol>
+<p class="why"><b>Why:</b> The loop terminates on <code>stop_reason</code>, and text and a tool call can arrive together.</p>
+<p class="anchor">Exam Guide: 1.1 Skills in: avoiding anti-patterns such as checking for assistant text content as a completion indicator</p>
+</div>
+<div class="ans">
+<p><b>2. Correct answer: B</b> <span class="meta">D1 &middot; Task 1.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> This is the mechanism that already failed. Prompt instructions retain a non-zero failure rate, and the 3% is that rate.</li>
+<li><span class="ltr">&check; B.</span> A prerequisite gate makes the out-of-order call structurally impossible rather than merely discouraged.</li>
+<li><span class="ltr">&times; C.</span> Forcing the tool on every request is the right mechanism at the wrong scope: the agent could never return a final answer.</li>
+<li><span class="ltr">&times; D.</span> Moving the call into a subagent relocates the work without gating it; nothing prevents the subagent from being invoked early.</li>
+</ol>
+<p class="why"><b>Why:</b> When compliance must be deterministic, a request is not a guarantee.</p>
+<p class="anchor">Exam Guide: 1.4 Skills in: implementing programmatic prerequisites that block downstream tool calls until prerequisite steps have completed</p>
+</div>
+<div class="ans">
+<p><b>3. Correct answer: D</b> <span class="meta">D1 &middot; Task 1.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Handing over raw material transfers the reading work rather than the conclusion, and the specialist has to redo the diagnosis.</li>
+<li><span class="ltr">&times; B.</span> Three messages are a fragment of the case, and tone is not a fact the specialist can act on.</li>
+<li><span class="ltr">&times; C.</span> The scenario states the specialist has no transcript access, so a link resolves to nothing.</li>
+<li><span class="ltr">&check; D.</span> A self-contained package gives the specialist identity, cause, amount at stake, and a proposed action, which is everything needed to act.</li>
+</ol>
+<p class="why"><b>Why:</b> A handoff is a decision package, not a pointer to where the decision could be reconstructed.</p>
+<p class="anchor">Exam Guide: 1.4 Skills in: compiling structured handoff summaries (customer ID, root cause, refund amount, recommended action) when escalating to human agents who lack access to the conversation transcript</p>
+</div>
+<div class="ans">
+<p><b>4. Correct answer: D</b> <span class="meta">D1 &middot; Task 1.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Documenting the inconsistency leaves the model to reconcile it on every comparison instead of removing the variance.</li>
+<li><span class="ltr">&times; B.</span> A prompt rule asks the model to do conversion work reliably on every turn, which is precisely what it is failing to do.</li>
+<li><span class="ltr">&times; C.</span> A pre-call hook intercepts the outgoing request; the heterogeneity is in what comes back.</li>
+<li><span class="ltr">&check; D.</span> Results are transformed once, in code, before they enter the model's reasoning at all.</li>
+</ol>
+<p class="why"><b>Why:</b> Normalize where the variance enters, not where the model has to cope with it.</p>
+<p class="anchor">Exam Guide: 1.5 Skills in: implementing PostToolUse hooks to normalize heterogeneous data formats (Unix timestamps, ISO 8601, numeric status codes) from different MCP tools before the agent processes them</p>
+</div>
+<div class="ans">
+<p><b>5. Correct answer: A</b> <span class="meta">D1 &middot; Task 1.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> A subagent sees its prompt and nothing else. A constraint stated to the coordinator never reaches it unless it is written into the delegation.</li>
+<li><span class="ltr">&times; B.</span> Without <code>Task</code> the coordinator could not spawn the subagent at all; here the subagent runs and completes work.</li>
+<li><span class="ltr">&times; C.</span> Degradation would produce erratic delegations across the board, not the consistent omission of one class of information.</li>
+<li><span class="ltr">&times; D.</span> There is no partial inheritance window. Subagents do not inherit parent memory at any point.</li>
+</ol>
+<p class="why"><b>Why:</b> Isolation is total, so anything the subagent must honor has to be handed to it.</p>
+<p class="anchor">Exam Guide: 1.3 Knowledge of: that subagent context must be explicitly provided in the prompt, subagents do not automatically inherit parent context</p>
+</div>
+<div class="ans">
+<p><b>6. Correct answer: B</b> <span class="meta">D1 &middot; Task 1.7</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> A caveat does not stop the model from reasoning over the stale values that are still sitting in context.</li>
+<li><span class="ltr">&check; B.</span> When the great majority of tool results are stale, the reliable move is a clean session carrying forward only the part that survived, which is the reasoning.</li>
+<li><span class="ltr">&times; C.</span> Targeted re-fetch is the right call when most of the context still holds. Here 24 of 26 results are invalid, so the session is stale rather than lightly outdated.</li>
+<li><span class="ltr">&times; D.</span> Forking preserves a baseline for divergent exploration, which is not the problem: there is one line of investigation and its data expired.</li>
+</ol>
+<p class="why"><b>Why:</b> Resume when context is mostly valid; restart with a summary when it mostly is not.</p>
+<p class="anchor">Exam Guide: 1.7 Skills in: choosing between session resumption (when prior context is mostly valid) and starting fresh with injected summaries (when prior tool results are stale)</p>
+</div>
+<div class="ans">
+<p><b>7. Correct answers: A, B</b> <span class="meta">D2 &middot; Task 2.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> <code>any</code> guarantees a call is made while leaving selection to the model.</li>
+<li><span class="ltr">&check; B.</span> If every request must call the named tool, the turn that would carry the final answer is consumed by another call.</li>
+<li><span class="ltr">&times; C.</span> <code>auto</code> leaves the model free to answer in text without calling anything; that is exactly what distinguishes it from <code>any</code>.</li>
+<li><span class="ltr">&times; D.</span> <code>tool_choice</code> is set per request. Nothing carries it forward on its own.</li>
+</ol>
+<p class="why"><b>Why:</b> <code>any</code> guarantees a call; <code>auto</code> does not; and forcing is per request, not a mode.</p>
+<p class="anchor">Exam Guide: 2.3 Knowledge of: tool_choice configuration options: "auto", "any", and forced tool selection</p>
+</div>
+<div class="ans">
+<p><b>8. Correct answer: C</b> <span class="meta">D2 &middot; Task 2.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Caching is defensible and would help, but it only makes an unnecessary call cheap. The call itself is what should disappear.</li>
+<li><span class="ltr">&times; B.</span> Merging couples a browse operation to a fetch operation and returns catalog data the agent usually does not need.</li>
+<li><span class="ltr">&check; C.</span> A resource gives the agent visibility into what exists without spending a tool call to ask.</li>
+<li><span class="ltr">&times; D.</span> The agent is not calling the tool by mistake; it calls it because it genuinely has no other way to see the catalog.</li>
+</ol>
+<p class="why"><b>Why:</b> A resource makes the exploratory call unnecessary; a cache only makes it faster.</p>
+<p class="anchor">Exam Guide: 2.4 Knowledge of: MCP resources as a mechanism for exposing content catalogs to reduce exploratory tool calls</p>
+</div>
+<div class="ans">
+<p><b>9. Correct answer: B</b> <span class="meta">D2 &middot; Task 2.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> An enum constrains what goes in. What varies here is what comes out, so the consumers keep breaking.</li>
+<li><span class="ltr">&check; B.</span> Each report type becomes a tool with a typed parameter and a single declared return shape, which is a contract consumers can rely on.</li>
+<li><span class="ltr">&times; C.</span> A normalization layer hides the variance from consumers while leaving three shapes flowing through the system.</li>
+<li><span class="ltr">&times; D.</span> The description is already accurate and selection already works; documenting the variance does not remove it.</li>
+</ol>
+<p class="why"><b>Why:</b> Varying input takes an enum; varying output takes separate tools.</p>
+<p class="anchor">Exam Guide: 2.1 Skills in: splitting generic tools into purpose-specific tools with defined input/output contracts</p>
+</div>
+<div class="ans">
+<p><b>10. Correct answer: C</b> <span class="meta">D5 &middot; Task 5.2</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> An explicit request for a human is the strongest trigger there is, and it is honored immediately.</li>
+<li><span class="ltr">&times; B.</span> Acting outside documented authority is exactly the boundary escalation exists to respect.</li>
+<li><span class="ltr">&check; C.</span> A self-reported score is the model grading its own work, and it correlates poorly with whether the case is actually beyond the agent.</li>
+<li><span class="ltr">&times; D.</span> Lack of progress is observable from the outside and does not depend on the model assessing itself.</li>
+</ol>
+<p class="why"><b>Why:</b> Escalation triggers should be observable, not self-reported.</p>
+<p class="anchor">Exam Guide: 5.2 Knowledge of: why sentiment-based escalation and self-reported confidence scores are unreliable proxies for actual case complexity</p>
+</div>
+<div class="ans">
+<p><b>11. Correct answer: C</b> <span class="meta">D3 &middot; Task 3.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> A skill is invoked on demand. Its description makes it findable, not automatic, so the conventions load only when someone thinks to ask.</li>
+<li><span class="ltr">&times; B.</span> <code>CLAUDE.md</code> is always loaded, so the conventions would occupy context during every unrelated task.</li>
+<li><span class="ltr">&check; C.</span> Path-scoped rules load automatically and only when a matching file is being edited, which is both requirements at once.</li>
+<li><span class="ltr">&times; D.</span> A command depends on the engineer remembering to run it, which is the automatic loading the scenario rules out.</li>
+</ol>
+<p class="why"><b>Why:</b> Automatic plus conditional is exactly what a path glob buys you.</p>
+<p class="anchor">Exam Guide: 3.3 Skills in: creating .claude/rules/ files with YAML frontmatter path scoping so rules load only when editing matching files</p>
+</div>
+<div class="ans">
+<p><b>12. Correct answer: A</b> <span class="meta">D3 &middot; Task 3.2</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> A long procedure needed twice a month is on-demand work; a convention that governs every file is a universal standard that should always be loaded.</li>
+<li><span class="ltr">&times; B.</span> Making the naming convention on-demand means it is absent from the many edits where nobody thinks to invoke it.</li>
+<li><span class="ltr">&times; C.</span> This inverts both: a nine-step procedure occupies context permanently while a repository-wide rule loads only for some paths.</li>
+<li><span class="ltr">&times; D.</span> A command is a reasonable home for a procedure, but putting a universal convention behind on-demand invocation repeats the error in B.</li>
+</ol>
+<p class="why"><b>Why:</b> Frequency and scope decide the home: universal and always, or specific and on demand.</p>
+<p class="anchor">Exam Guide: 3.2 Skills in: choosing between skills (on-demand invocation for task-specific workflows) and CLAUDE.md (always-loaded universal standards)</p>
+</div>
+<div class="ans">
+<p><b>13. Correct answer: D</b> <span class="meta">D3 &middot; Task 3.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> The project half is right, but instructions for Claude live in <code>CLAUDE.md</code>; there is no <code>config.json</code> in this hierarchy.</li>
+<li><span class="ltr">&times; B.</span> <code>.claude/rules/</code> is a real home for team conventions, but a settings file is not where personal instructions go, and this pair puts hers inside the repository.</li>
+<li><span class="ltr">&times; C.</span> Anything committed to the repository reaches everyone who clones it, so her preferences would be imposed on the team.</li>
+<li><span class="ltr">&check; D.</span> User-level configuration follows the person across every repository and is never shared; project-level travels with the clone.</li>
+</ol>
+<p class="why"><b>Why:</b> The axis is who receives it: the user everywhere, or everyone who clones this repository.</p>
+<p class="anchor">Exam Guide: 3.1 Knowledge of: the CLAUDE.md configuration hierarchy: user-level (~/.claude/CLAUDE.md), project-level, and directory-level; user-level settings are not shared with teammates via version control</p>
+</div>
+<div class="ans">
+<p><b>14. Correct answer: B</b> <span class="meta">D3 &middot; Task 3.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Plan mode earns its cost on architectural decisions and multi-file work; here the scope is one function and the cause is already known.</li>
+<li><span class="ltr">&check; B.</span> A single-file fix with a known cause and a known failing input is the textbook case for direct execution.</li>
+<li><span class="ltr">&times; C.</span> Test-driven iteration is valuable when behavior is unclear, but the failing input is already in hand and the fix is one line of judgment.</li>
+<li><span class="ltr">&times; D.</span> Call-site exploration matters when a signature changes; the scenario states the callers are not in scope.</li>
+</ol>
+<p class="why"><b>Why:</b> Plan mode is for choosing among approaches, not for changes with one obvious shape.</p>
+<p class="anchor">Exam Guide: 3.4 Skills in: selecting direct execution for well-understood changes with clear scope (e.g., a single-file bug fix with a clear stack trace)</p>
+</div>
+<div class="ans">
+<p><b>15. Correct answer: C</b> <span class="meta">D3 &middot; Task 3.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Examples are the strongest tool when you know the transformation you want. This team cannot yet state it.</li>
+<li><span class="ltr">&times; B.</span> Plan mode produces a plan from the requirements you bring it, and the requirements are the missing piece.</li>
+<li><span class="ltr">&check; C.</span> The interview pattern surfaces the considerations a team new to a domain does not know to raise, which is precisely the stated gap.</li>
+<li><span class="ltr">&times; D.</span> Building first and discovering the requirements through rework is the cost the interview is meant to avoid.</li>
+</ol>
+<p class="why"><b>Why:</b> When the team cannot state the requirement, elicit it before designing to it.</p>
+<p class="anchor">Exam Guide: 3.5 Skills in: using the interview pattern to surface design considerations before implementing solutions in unfamiliar domains</p>
+</div>
+<div class="ans">
+<p><b>16. Correct answer: C</b> <span class="meta">D5 &middot; Task 5.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> A larger window delays the same degradation without addressing where the findings live.</li>
+<li><span class="ltr">&times; B.</span> Clearing discards the specific discoveries that are the expensive part of the session.</li>
+<li><span class="ltr">&check; C.</span> A scratchpad moves the findings out of the window entirely, so they survive degradation and can be referenced deliberately.</li>
+<li><span class="ltr">&times; D.</span> An in-session summary is a reasonable step, but it leaves the record inside the same degrading context it is meant to protect.</li>
+</ol>
+<p class="why"><b>Why:</b> Degradation is about where findings live, not how much room they have.</p>
+<p class="anchor">Exam Guide: 5.4 Skills in: having agents maintain scratchpad files recording key findings, referencing them for subsequent questions to counteract context degradation</p>
+</div>
+<div class="ans">
+<p><b>17. Correct answer: D</b> <span class="meta">D5 &middot; Task 5.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Filtering by severity removes real findings to work around a position effect, and the missed issues include severe ones.</li>
+<li><span class="ltr">&times; B.</span> Per-file comments are a genuine improvement in delivery, but each one still has a middle that readers skim.</li>
+<li><span class="ltr">&times; C.</span> A trailing summary reinforces the end, which is already one of the two positions readers do attend to.</li>
+<li><span class="ltr">&check; D.</span> Front-loading what matters and giving the body explicit structure works with the way long inputs are read rather than against it.</li>
+</ol>
+<p class="why"><b>Why:</b> Information in the middle gets lost, so put what matters where attention lands.</p>
+<p class="anchor">Exam Guide: 5.1 Skills in: placing key findings summaries at the beginning of aggregated inputs and organizing detailed results with explicit section headers to mitigate position effects</p>
+</div>
+<div class="ans">
+<p><b>18. Correct answer: D</b> <span class="meta">D5 &middot; Task 5.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Grep finds the direct hits and misses every package that renames the symbol behind a wrapper, which is likely across 11 sets of conventions.</li>
+<li><span class="ltr">&times; B.</span> Structural mapping is the right opening move for understanding one unfamiliar package, but eleven maps still land in the same window.</li>
+<li><span class="ltr">&times; C.</span> Generalizing from three packages assumes the other eight follow their conventions, which the scenario explicitly denies.</li>
+<li><span class="ltr">&check; D.</span> Each subagent absorbs the exploration in its own context and returns a compact answer, so the coordinator holds only conclusions.</li>
+</ol>
+<p class="why"><b>Why:</b> When the material exceeds the window, delegate the reading and keep the conclusions.</p>
+<p class="anchor">Exam Guide: 5.4 Skills in: spawning subagents to investigate specific questions while the main agent preserves high-level coordination</p>
+</div>
+<div class="ans">
+<p><b>19. Correct answers: A, C</b> <span class="meta">D5 &middot; Task 5.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> Thirty-six unused fields per call are pure accumulation, and trimming them is the cheapest reclamation available.</li>
+<li><span class="ltr">&times; B.</span> A larger window postpones the limit without reducing what is consuming it.</li>
+<li><span class="ltr">&check; C.</span> Compressing what is settled while preserving what is live is the shape progressive summarization is meant to take.</li>
+<li><span class="ltr">&times; D.</span> A clean session discards the resolved history along with the active thread that still needs it.</li>
+</ol>
+<p class="why"><b>Why:</b> Reclaim context by removing what is unused and compressing what is finished.</p>
+<p class="anchor">Exam Guide: 5.1 Skills in: trimming verbose tool outputs to only relevant fields before they accumulate in context; extracting transactional facts into a persistent block outside summarized history</p>
+</div>
+<div class="ans">
+<p><b>20. Correct answer: D</b> <span class="meta">D5 &middot; Task 5.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Compressing settled material is the standard way to reclaim room without losing the thread.</li>
+<li><span class="ltr">&times; B.</span> Field pruning removes accumulation that was never contributing to the reasoning.</li>
+<li><span class="ltr">&times; C.</span> Externalizing state is what allows work to cross a context boundary intact.</li>
+<li><span class="ltr">&check; D.</span> Starting over with nothing carried forward throws away the findings the session was assembling, which is the cost the other three avoid.</li>
+</ol>
+<p class="why"><b>Why:</b> Every remedy here preserves the findings except the one that discards them.</p>
+<p class="anchor">Exam Guide: 5.4 Skills in: summarizing key findings from one exploration phase before spawning sub-agents for the next phase, injecting summaries into initial context</p>
+</div>
+<div class="ans">
+<p><b>21. Correct answer: B</b> <span class="meta">D1 &middot; Task 1.2</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Subagent isolation is by design, and the coordinator is the component meant to prevent overlap by partitioning scope before delegating.</li>
+<li><span class="ltr">&check; B.</span> One pipeline for every query is too much machinery for a narrow question and too little for a broad one, which is exactly the two symptoms reported.</li>
+<li><span class="ltr">&times; C.</span> Deduplicating at synthesis tidies the output after the redundant work has already been paid for, and it does nothing for the uncovered areas.</li>
+<li><span class="ltr">&times; D.</span> A capacity ceiling would truncate results, not produce coverage that is simultaneously duplicated and incomplete.</li>
+</ol>
+<p class="why"><b>Why:</b> The coordinator should choose the decomposition per query, not run a fixed pipeline.</p>
+<p class="anchor">Exam Guide: 1.2 Skills in: designing coordinator agents that analyze query requirements and dynamically select which subagents to invoke rather than always routing through the full pipeline</p>
+</div>
+<div class="ans">
+<p><b>22. Correct answer: C</b> <span class="meta">D1 &middot; Task 1.2</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> More parallel work widens the first pass without ever checking whether the questions were answered.</li>
+<li><span class="ltr">&times; B.</span> Annotating the gaps is honest reporting and worth doing, but the team asked for the system to close them, not to describe them.</li>
+<li><span class="ltr">&check; C.</span> Evaluating the synthesis against the original sub-questions and re-delegating targeted queries is the loop that converges on coverage.</li>
+<li><span class="ltr">&times; D.</span> A subagent can confirm it finished its own assignment; it cannot know which sub-questions the report as a whole still misses.</li>
+</ol>
+<p class="why"><b>Why:</b> Coverage is a property of the whole report, so only the coordinator can judge it.</p>
+<p class="anchor">Exam Guide: 1.2 Skills in: implementing iterative refinement loops where the coordinator evaluates synthesis output for gaps, re-delegates to search and analysis subagents with targeted queries, and re-invokes synthesis until coverage is sufficient</p>
+</div>
+<div class="ans">
+<p><b>23. Correct answer: C</b> <span class="meta">D1 &middot; Task 1.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> A composite tool builds new infrastructure to obtain parallelism the coordinator can already express natively.</li>
+<li><span class="ltr">&times; B.</span> Nested spawning does run the work concurrently, but it moves three subagents outside the coordinator's view and breaks hub-and-spoke observability.</li>
+<li><span class="ltr">&check; C.</span> Multiple <code>Task</code> calls in one response start the four searches together while every result still returns to the coordinator.</li>
+<li><span class="ltr">&times; D.</span> Four shorter serial steps are still four serial steps, and the searches are independent.</li>
+</ol>
+<p class="why"><b>Why:</b> Parallelism comes from one response carrying several calls, not from nesting agents.</p>
+<p class="anchor">Exam Guide: 1.3 Skills in: spawning parallel subagents by emitting multiple Task tool calls in a single coordinator response rather than across separate turns</p>
+</div>
+<div class="ans">
+<p><b>24. Correct answer: A</b> <span class="meta">D1 &middot; Task 1.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> The coordinator reasons about delegation correctly and then has no mechanism to act, which is exactly what reasoning-but-not-executing looks like.</li>
+<li><span class="ltr">&times; B.</span> Softly worded delegation would produce inconsistent spawning across runs, not a plan that names the right subagents and then never invokes any.</li>
+<li><span class="ltr">&times; C.</span> Poor descriptions cause the wrong subagent to be chosen; here the coordinator names the right ones.</li>
+<li><span class="ltr">&times; D.</span> A turn ceiling truncates work in progress rather than preventing the first call from ever being emitted.</li>
+</ol>
+<p class="why"><b>Why:</b> Naming the right subagent and never calling it points at the tool, not the prompt.</p>
+<p class="anchor">Exam Guide: 1.3 Knowledge of: the Task tool as the mechanism for spawning subagents, and the requirement that allowedTools must include Task for a coordinator to invoke subagents</p>
+</div>
+<div class="ans">
+<p><b>25. Correct answer: D</b> <span class="meta">D1 &middot; Task 1.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Filing retrieval is per company and depends on nothing else in the list.</li>
+<li><span class="ltr">&times; B.</span> News searches are independent per company and can be issued at once.</li>
+<li><span class="ltr">&times; C.</span> Rating collection touches two sources and no other step's output.</li>
+<li><span class="ltr">&check; D.</span> A comparison consumes all three companies' material, so it can only start once the gathering steps have returned.</li>
+</ol>
+<p class="why"><b>Why:</b> Gathering fans out; the step that consumes every branch has to wait.</p>
+<p class="anchor">Exam Guide: 1.6 Skills in: selecting task decomposition patterns appropriate to the workflow: prompt chaining for predictable multi-aspect reviews, dynamic decomposition for open-ended investigation</p>
+</div>
+<div class="ans">
+<p><b>26. Correct answer: D</b> <span class="meta">D2 &middot; Task 2.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Adding exclusions to one side leaves the other still describing itself in terms that fit both, so the boundary is only half drawn.</li>
+<li><span class="ltr">&times; B.</span> Merging removes the confusion by removing the distinction, which costs the specificity that made two tools worth having.</li>
+<li><span class="ltr">&times; C.</span> Scoping stops one subagent from reaching the wrong tool, but the coordinator itself is the component doing the misrouting.</li>
+<li><span class="ltr">&check; D.</span> Names that do not compete, plus descriptions that each point at the other's territory, remove the ambiguity from both sides at once.</li>
+</ol>
+<p class="why"><b>Why:</b> Overlap lives between two descriptions, so both have to change.</p>
+<p class="anchor">Exam Guide: 2.1 Skills in: renaming tools and updating descriptions to eliminate functional overlap (e.g., renaming analyze_content to extract_web_results with a web-specific description)</p>
+</div>
+<div class="ans">
+<p><b>27. Correct answer: B</b> <span class="meta">D2 &middot; Task 2.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Handing a synthesis agent the full research kit is the over-broad access that leads agents to misuse tools outside their specialization.</li>
+<li><span class="ltr">&check; B.</span> A narrow tool covers the frequent simple need in place, while the harder judgment stays with the component that can see all the sources.</li>
+<li><span class="ltr">&times; C.</span> Pre-verifying every figure pays the cost on 100% of figures to serve the 15% that need it.</li>
+<li><span class="ltr">&times; D.</span> Verifying after synthesis means the claim has already been written into the report before anyone checks it.</li>
+</ol>
+<p class="why"><b>Why:</b> Scope the frequent simple case locally and escalate the rare hard one.</p>
+<p class="anchor">Exam Guide: 2.3 Skills in: providing scoped cross-role tools for high-frequency needs (e.g., a verify_fact tool for the synthesis agent) while routing complex cases through the coordinator</p>
+</div>
+<div class="ans">
+<p><b>28. Correct answers: B, C</b> <span class="meta">D2 &middot; Task 2.2</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Reporting a permission failure as an empty result silently converts a problem into an answer, and the coordinator never learns it needs credentials.</li>
+<li><span class="ltr">&check; B.</span> A successful query that matched nothing is information, not a fault, and labeling it an error would trigger pointless retries.</li>
+<li><span class="ltr">&check; C.</span> Category, retryability, and a readable cause are exactly what let the coordinator choose between retrying, escalating, and moving on.</li>
+<li><span class="ltr">&times; D.</span> A uniform message is what prevents recovery: the coordinator cannot tell a timeout worth retrying from a permission wall that never will be.</li>
+</ol>
+<p class="why"><b>Why:</b> An empty result is an answer; a failure needs enough structure to act on.</p>
+<p class="anchor">Exam Guide: 2.2 Skills in: returning structured error metadata including errorCategory, isRetryable boolean, and human-readable descriptions; distinguishing between access failures and valid empty results</p>
+</div>
+<div class="ans">
+<p><b>29. Correct answer: D</b> <span class="meta">D2 &middot; Task 2.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Control over a standard integration buys little and costs the ongoing maintenance of an API surface someone else already tracks.</li>
+<li><span class="ltr">&times; B.</span> How central the tracker is argues for a well-maintained integration, not for a bespoke one the team must keep current alone.</li>
+<li><span class="ltr">&times; C.</span> Wrapping is the right instinct once there is genuine team-specific behavior to add, but nothing in the scenario says there is any yet.</li>
+<li><span class="ltr">&check; D.</span> Standard integrations are where community servers are strongest, and custom effort is reserved for what only this team needs.</li>
+</ol>
+<p class="why"><b>Why:</b> Build custom where the workflow is yours, not where the integration is standard.</p>
+<p class="anchor">Exam Guide: 2.4 Skills in: choosing existing community MCP servers over custom implementations for standard integrations (e.g., Jira), reserving custom servers for team-specific workflows</p>
+</div>
+<div class="ans">
+<p><b>30. Correct answer: A</b> <span class="meta">D5 &middot; Task 5.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> With both values dated and attributed, the reader can see whether this is a contradiction or a company that shrank over six months.</li>
+<li><span class="ltr">&times; B.</span> Ranking sources by type discards a later observation on the strength of a general rule about credibility.</li>
+<li><span class="ltr">&times; C.</span> Preferring the newer figure assumes the two are measuring the same moment, which is the very thing the dates would settle.</li>
+<li><span class="ltr">&times; D.</span> Averaging invents a number that neither source reported and that describes no point in time.</li>
+</ol>
+<p class="why"><b>Why:</b> Dates decide whether two figures conflict or simply describe different moments.</p>
+<p class="anchor">Exam Guide: 5.6 Knowledge of: how to handle conflicting statistics from credible sources: annotating conflicts with source attribution rather than arbitrarily selecting one value; requiring publication or collection dates to enable correct temporal interpretation</p>
+</div>
+<div class="ans">
+<p><b>31. Correct answer: B</b> <span class="meta">D2 &middot; Task 2.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Searching for a test function name finds files by their contents, which misses any suite written with a different harness and catches non-test files that mention it.</li>
+<li><span class="ltr">&check; B.</span> Both naming conventions are file path patterns, so two globs cover the whole population exactly.</li>
+<li><span class="ltr">&times; C.</span> The scenario states some test files define their own helpers, so this misses them by construction.</li>
+<li><span class="ltr">&times; D.</span> Reading every <code>.tsx</code> file in a monorepo to classify it works, at a cost far above matching two patterns.</li>
+</ol>
+<p class="why"><b>Why:</b> Finding files by name is a Glob question; Grep answers questions about contents.</p>
+<p class="anchor">Exam Guide: 2.5 Skills in: selecting Glob for finding files matching naming patterns (e.g., **/*.test.tsx)</p>
+</div>
+<div class="ans">
+<p><b>32. Correct answer: C</b> <span class="meta">D2 &middot; Task 2.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Widening the anchor sometimes works and is worth a try, but it depends on the surrounding lines happening to differ, which seven repetitions in one file make unlikely.</li>
+<li><span class="ltr">&times; B.</span> Making six wrong changes in order to make one right one leaves the file correct only if every revert lands.</li>
+<li><span class="ltr">&check; C.</span> Reading the full contents and writing them back is the documented fallback precisely because it does not depend on a unique anchor existing.</li>
+<li><span class="ltr">&times; D.</span> Appending a duplicate definition changes behavior through shadowing rather than editing the value that was meant to change.</li>
+</ol>
+<p class="why"><b>Why:</b> When Edit has no unique anchor, Read plus Write is the reliable path.</p>
+<p class="anchor">Exam Guide: 2.5 Knowledge of: when Edit fails due to non-unique text matches, using Read + Write as a fallback for reliable file modifications</p>
+</div>
+<div class="ans">
+<p><b>33. Correct answer: C</b> <span class="meta">D2 &middot; Task 2.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Searching the original name finds only the callers that use it, and the wrappers exist precisely to expose other names.</li>
+<li><span class="ltr">&times; B.</span> The callers are spread across the codebase; reading the <code>auth/</code> directory describes the source, not its consumers.</li>
+<li><span class="ltr">&check; C.</span> Enumerating the aliases first turns one incomplete search into a complete set of searches.</li>
+<li><span class="ltr">&times; D.</span> Import tracing finds the wrappers themselves, then stops one hop short of the code that calls them by their new names.</li>
+</ol>
+<p class="why"><b>Why:</b> Enumerate the aliases before searching, or the search is incomplete by construction.</p>
+<p class="anchor">Exam Guide: 2.5 Skills in: tracing function usage across wrapper modules by first identifying all exported names, then searching for each name across the codebase</p>
+</div>
+<div class="ans">
+<p><b>34. Correct answer: D</b> <span class="meta">D2 &middot; Task 2.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Reading everything fits here, but it spends the whole window on a question about one flow and buries the answer in unrelated material.</li>
+<li><span class="ltr">&times; B.</span> File names are a weak proxy for behavior, and backoff logic frequently lives in files named for something else.</li>
+<li><span class="ltr">&times; C.</span> Delegation earns its overhead when the material will not fit; the scenario states that it does.</li>
+<li><span class="ltr">&check; D.</span> Finding the entry points and following imports traces the actual path through the service, which is the thing being asked about.</li>
+</ol>
+<p class="why"><b>Why:</b> Trace the flow from its entry points instead of ingesting the whole service.</p>
+<p class="anchor">Exam Guide: 2.5 Skills in: building codebase understanding incrementally: starting with Grep to find entry points, then using Read to follow imports and trace flows, rather than reading all files upfront</p>
+</div>
+<div class="ans">
+<p><b>35. Correct answer: A</b> <span class="meta">D3 &middot; Task 3.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> Different behavior on identical code means different instructions are in play, and listing what each session loaded shows that directly.</li>
+<li><span class="ltr">&times; B.</span> User-level files are one plausible source of the difference, but reading them by hand guesses at what is loaded instead of observing it.</li>
+<li><span class="ltr">&times; C.</span> Both engineers are on the same commit, so the checkout is not the variable.</li>
+<li><span class="ltr">&times; D.</span> Consolidation might mask the difference without ever revealing which layer caused it.</li>
+</ol>
+<p class="why"><b>Why:</b> Observe which configuration layers loaded before theorizing about which one differs.</p>
+<p class="anchor">Exam Guide: 3.1 Skills in: using the /memory command to verify which memory files are loaded and diagnose inconsistent behavior across sessions</p>
+</div>
+<div class="ans">
+<p><b>36. Correct answer: D</b> <span class="meta">D1 &middot; Task 1.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Attention dilutes across 40 files regardless of tier, and the criteria are already known to work at smaller scale.</li>
+<li><span class="ltr">&times; B.</span> Diff size is a poor proxy for risk, and the approach abandons coverage rather than restoring it.</li>
+<li><span class="ltr">&times; C.</span> A second read of the same oversized input reproduces the same middle-of-the-set gap.</li>
+<li><span class="ltr">&check; D.</span> Local issues get a focused pass per file, and the interactions that produce contradictions get a pass of their own.</li>
+</ol>
+<p class="why"><b>Why:</b> Split by concern: local findings per file, interactions in their own pass.</p>
+<p class="anchor">Exam Guide: 1.6 Skills in: splitting large code reviews into per-file local analysis passes plus a separate cross-file integration pass to avoid attention dilution</p>
+</div>
+<div class="ans">
+<p><b>37. Correct answer: C</b> <span class="meta">D1 &middot; Task 1.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> This is the loop's control flow exactly as specified.</li>
+<li><span class="ltr">&times; B.</span> Appending results is what lets the model reason about what it has already learned.</li>
+<li><span class="ltr">&check; C.</span> Reading natural language to infer completion is the named anti-pattern; the signal is structural, not textual.</li>
+<li><span class="ltr">&times; D.</span> Model-driven decision making at each step is what separates an agentic loop from a fixed sequence.</li>
+</ol>
+<p class="why"><b>Why:</b> The loop reads <code>stop_reason</code>, never the prose.</p>
+<p class="anchor">Exam Guide: 1.1 Skills in: avoiding anti-patterns such as parsing natural language signals to determine loop termination</p>
+</div>
+<div class="ans">
+<p><b>38. Correct answer: A</b> <span class="meta">D1 &middot; Task 1.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> Intercepting before execution is the only point at which the deletion can still be prevented rather than merely noted.</li>
+<li><span class="ltr">&times; B.</span> A post-execution hook produces an audit trail of deletions that already happened, which is not what never-without-approval means.</li>
+<li><span class="ltr">&times; C.</span> Forcing a tool shapes what the model calls next; it does not stop a call the model has already decided to make.</li>
+<li><span class="ltr">&times; D.</span> Examples raise compliance and leave a residual failure rate, which a policy written as never does not tolerate.</li>
+</ol>
+<p class="why"><b>Why:</b> Never means the action has to be impossible, not merely discouraged.</p>
+<p class="anchor">Exam Guide: 1.5 Skills in: implementing tool call interception hooks that block policy-violating actions and redirect to alternative workflows; choosing hooks over prompt-based enforcement when business rules require guaranteed compliance</p>
+</div>
+<div class="ans">
+<p><b>39. Correct answers: A, D</b> <span class="meta">D1 &middot; Task 1.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> Tool restriction per subagent is what keeps each one inside its specialization.</li>
+<li><span class="ltr">&times; B.</span> Subagent context is isolated, which is why anything it must know has to be written into its prompt.</li>
+<li><span class="ltr">&times; C.</span> Each subagent definition carries its own system prompt; there is no inheritance to fall back on.</li>
+<li><span class="ltr">&check; D.</span> Without <code>Task</code> the coordinator can reason about delegating and never actually delegate.</li>
+</ol>
+<p class="why"><b>Why:</b> Subagents inherit nothing: prompt, context, and tools are all declared per definition.</p>
+<p class="anchor">Exam Guide: 1.3 Knowledge of: the AgentDefinition configuration including descriptions, system prompts, and tool restrictions; that subagent context must be explicitly provided in the prompt</p>
+</div>
+<div class="ans">
+<p><b>40. Correct answer: A</b> <span class="meta">D1 &middot; Task 1.7</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> Forking gives two independent branches that share the analysis without either overwriting the other.</li>
+<li><span class="ltr">&times; B.</span> Resuming the same session twice extends one line of work; the second run inherits whatever the first one did.</li>
+<li><span class="ltr">&times; C.</span> Fresh sessions with an injected summary do isolate the branches, at the cost of re-deriving context the baseline already holds in full.</li>
+<li><span class="ltr">&times; D.</span> Continuing serializes the comparison and lets the first approach's context shape the second.</li>
+</ol>
+<p class="why"><b>Why:</b> Divergent branches from one baseline is what forking is for.</p>
+<p class="anchor">Exam Guide: 1.7 Skills in: using fork_session to create parallel exploration branches (e.g., comparing two testing strategies or refactoring approaches from a shared codebase analysis)</p>
+</div>
+<div class="ans">
+<p><b>41. Correct answer: C</b> <span class="meta">D3 &middot; Task 3.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> There is no such environment variable, and parsing free-form output is what structured output exists to replace.</li>
+<li><span class="ltr">&times; B.</span> There is no <code>--batch</code> flag on the CLI; batching is a property of the API, not of a Claude Code invocation.</li>
+<li><span class="ltr">&check; C.</span> Non-interactive mode prevents the hang, and the two output flags together produce findings a later step can post without parsing prose.</li>
+<li><span class="ltr">&times; D.</span> Running interactively in CI is what hangs the job waiting for input that never arrives.</li>
+</ol>
+<p class="why"><b>Why:</b> Non-interactive plus a declared schema is what makes CI output usable downstream.</p>
+<p class="anchor">Exam Guide: 3.6 Skills in: running Claude Code in CI with the -p flag; using --output-format json with --json-schema to produce machine-parseable structured findings for automated posting as inline PR comments</p>
+</div>
+<div class="ans">
+<p><b>42. Correct answer: B</b> <span class="meta">D3 &middot; Task 3.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Clearing inside one session depends on the clearing being complete every time, which is a weaker guarantee than never sharing the context at all.</li>
+<li><span class="ltr">&check; B.</span> Separate sessions make cross-contamination structurally impossible rather than something the pipeline has to remember to prevent.</li>
+<li><span class="ltr">&times; C.</span> Fewer pull requests per run reduces how often the bleed happens without removing the cause.</li>
+<li><span class="ltr">&times; D.</span> An instruction asks the model not to use context that is still sitting in front of it.</li>
+</ol>
+<p class="why"><b>Why:</b> Isolation by construction beats an instruction to ignore what is present.</p>
+<p class="anchor">Exam Guide: 3.6 Knowledge of: session context isolation: why the same Claude session that generated code is less effective at reviewing its own changes compared to an independent review instance</p>
+</div>
+<div class="ans">
+<p><b>43. Correct answer: A</b> <span class="meta">D3 &middot; Task 3.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> The agent repeats itself because each run starts blind; giving it the prior findings is what lets it tell new from already-said.</li>
+<li><span class="ltr">&times; B.</span> Restricting to the latest diff hides issues that earlier commits introduced and later commits never touched.</li>
+<li><span class="ltr">&times; C.</span> Post-hoc deduplication cleans the thread after the noise has already reached the developers.</li>
+<li><span class="ltr">&times; D.</span> Reviewing once abandons the point of re-running, which is to catch what the new commits introduce.</li>
+</ol>
+<p class="why"><b>Why:</b> An agent cannot avoid repeating what it was never told it already said.</p>
+<p class="anchor">Exam Guide: 3.6 Skills in: including prior review findings in context when re-running reviews after new commits, instructing Claude to report only new or still-unaddressed issues to avoid duplicate comments</p>
+</div>
+<div class="ans">
+<p><b>44. Correct answer: D</b> <span class="meta">D3 &middot; Task 3.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Fewer tests means proportionally fewer duplicates and proportionally fewer new ones too.</li>
+<li><span class="ltr">&times; B.</span> Filtering afterwards spends the generation on work that is discarded and needs a reliable equivalence check.</li>
+<li><span class="ltr">&times; C.</span> File-level coverage is too coarse: a covered file can still have uncovered branches, which is where the useful tests are.</li>
+<li><span class="ltr">&check; D.</span> Once the agent can see what the suite already asserts, it stops proposing it.</li>
+</ol>
+<p class="why"><b>Why:</b> The agent duplicates what it cannot see.</p>
+<p class="anchor">Exam Guide: 3.6 Skills in: providing existing test files in context so test generation avoids suggesting duplicate scenarios already covered by the test suite</p>
+</div>
+<div class="ans">
+<p><b>45. Correct answer: A</b> <span class="meta">D3 &middot; Task 3.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> All three symptoms are missing project knowledge, and the always-loaded project file is where CI-invoked runs pick that knowledge up.</li>
+<li><span class="ltr">&times; B.</span> Examples are strong for format and for ambiguous judgment calls, but they cannot tell the agent which fixtures this repository has.</li>
+<li><span class="ltr">&times; C.</span> A stronger model still cannot know which paths this team considers worth covering.</li>
+<li><span class="ltr">&times; D.</span> Review catches bad tests after they are written rather than causing better ones to be written.</li>
+</ol>
+<p class="why"><b>Why:</b> Quality complaints that are really missing context get fixed by supplying the context.</p>
+<p class="anchor">Exam Guide: 3.6 Skills in: documenting testing standards, valuable test criteria, and available fixtures in CLAUDE.md to improve test generation quality and reduce low-value test output</p>
+</div>
+<div class="ans">
+<p><b>46. Correct answer: A</b> <span class="meta">D3 &middot; Task 3.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> The suite already encodes the specification, so each failure is a precise, checkable instruction for the next iteration.</li>
+<li><span class="ltr">&times; B.</span> Examples communicate a transformation when no executable specification exists; here one already does, in more detail.</li>
+<li><span class="ltr">&times; C.</span> An interview surfaces requirements nobody has stated, and the edge cases are stated already.</li>
+<li><span class="ltr">&times; D.</span> Plan mode weighs approaches, and the approach here is to satisfy an existing suite.</li>
+</ol>
+<p class="why"><b>Why:</b> When the specification is executable, failures are the feedback loop.</p>
+<p class="anchor">Exam Guide: 3.5 Knowledge of: test-driven iteration: writing test suites first, then iterating by sharing test failures to guide progressive improvement</p>
+</div>
+<div class="ans">
+<p><b>47. Correct answer: D</b> <span class="meta">D4 &middot; Task 4.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> The pre-merge check fails two batch preconditions at once: it blocks a person, and it needs tool calls inside a single request.</li>
+<li><span class="ltr">&times; B.</span> Running the weekly audit synchronously is correct but pays full price for a job with three days of slack.</li>
+<li><span class="ltr">&times; C.</span> This is the correct reasoning applied to the wrong workload, and the batch limitation on mid-request tool calls makes the pre-merge check unrunnable.</li>
+<li><span class="ltr">&check; D.</span> The blocking, tool-calling workload goes synchronous; the latency-tolerant one takes the savings.</li>
+</ol>
+<p class="why"><b>Why:</b> Batch suits work nobody is waiting on and that needs no tools mid-request.</p>
+<p class="anchor">Exam Guide: 4.5 Knowledge of: batch processing is appropriate for non-blocking, latency-tolerant workloads and inappropriate for blocking workflows; the batch API does not support multi-turn tool calling within a single request</p>
+</div>
+<div class="ans">
+<p><b>48. Correct answer: B</b> <span class="meta">D4 &middot; Task 4.6</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> An instance without the generator's reasoning has no commitment to the decisions it is inspecting.</li>
+<li><span class="ltr">&check; B.</span> The session that produced the code carries the reasoning that made it look right, and more deliberation inside that same context does not dislodge it.</li>
+<li><span class="ltr">&times; C.</span> Splitting the passes addresses attention dilution, which is a different failure and a real one.</li>
+<li><span class="ltr">&times; D.</span> Per-finding confidence does not catch defects by itself, but it routes maintainer attention usefully.</li>
+</ol>
+<p class="why"><b>Why:</b> Self-review inherits the reasoning that produced the defect.</p>
+<p class="anchor">Exam Guide: 4.6 Knowledge of: self-review limitations: a model retains reasoning context from generation, making it less likely to question its own decisions in the same session; independent review instances are more effective than self-review instructions or extended thinking</p>
+</div>
+<div class="ans">
+<p><b>49. Correct answer: C</b> <span class="meta">D4 &middot; Task 4.1</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Confidence is not the problem: the agent is highly confident about style observations that this team simply does not want.</li>
+<li><span class="ltr">&times; B.</span> Self-critique helps where the gaps vary unpredictably; here the unwanted class is stable and nameable, so it can just be excluded.</li>
+<li><span class="ltr">&check; C.</span> The noise falls in one identifiable category, and a criterion that names it removes the category without touching the findings developers act on.</li>
+<li><span class="ltr">&times; D.</span> A numeric threshold is the same confidence filter in numeric clothing, and it drops accurate findings alongside unwanted ones.</li>
+</ol>
+<p class="why"><b>Why:</b> If you can name the category you do not want, name it instead of tuning a dial.</p>
+<p class="anchor">Exam Guide: 4.1 Knowledge of: how general instructions like 'be conservative' or 'only report high-confidence findings' fail to improve precision compared to specific categorical criteria</p>
+</div>
+<div class="ans">
+<p><b>50. Correct answers: C, D</b> <span class="meta">D4 &middot; Task 4.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Asking for JSON in prose produces JSON most of the time, and a pipeline that blocks merges cannot run on most of the time.</li>
+<li><span class="ltr">&times; B.</span> Keyword search over prose is the least reliable option here: a single hedged sentence flips the verdict.</li>
+<li><span class="ltr">&check; C.</span> A schema attached to a tool makes the response structurally conformant instead of hopefully conformant.</li>
+<li><span class="ltr">&check; D.</span> The CLI flags enforce the same guarantee at the invocation level, which is where a pipeline consumes it.</li>
+</ol>
+<p class="why"><b>Why:</b> A schema enforces the shape; a prompt only requests it.</p>
+<p class="anchor">Exam Guide: 4.3 Knowledge of: tool use with JSON schemas as the most reliable approach for guaranteed schema-compliant structured output; 3.6 --output-format json and --json-schema for enforcing structured output in CI</p>
+</div>
+<div class="ans">
+<p><b>51. Correct answer: B</b> <span class="meta">D4 &middot; Task 4.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Sharper descriptions would help the misplaced identifier, and they say nothing about arithmetic that does not add up.</li>
+<li><span class="ltr">&check; B.</span> A schema constrains shape and type. Both symptoms are well-formed values that happen to be wrong, which is exactly the gap schema enforcement leaves open.</li>
+<li><span class="ltr">&times; C.</span> Layout variation produces inconsistent extraction, not values landing confidently in the wrong field.</li>
+<li><span class="ltr">&times; D.</span> Fabrication fills fields that have no source; here the source has both values and they are being placed and summed incorrectly.</li>
+</ol>
+<p class="why"><b>Why:</b> Valid structure and wrong content are independent, and only one of them has a schema.</p>
+<p class="anchor">Exam Guide: 4.3 Knowledge of: that strict JSON schemas via tool use eliminate syntax errors but do not prevent semantic errors (e.g., line items that don't sum to total, values in wrong fields)</p>
+</div>
+<div class="ans">
+<p><b>52. Correct answer: A</b> <span class="meta">D4 &middot; Task 4.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> A required field the document does not contain leaves the model one way to satisfy the schema, which is to invent a value. Completeness is bought with fabrication.</li>
+<li><span class="ltr">&times; B.</span> Nullable plus an explicit instruction gives absence a way to be recorded truthfully.</li>
+<li><span class="ltr">&times; C.</span> An "unclear" value separates a clause that is missing from one that is present but unreadable.</li>
+<li><span class="ltr">&times; D.</span> Flagging nulls routes the genuine gaps to a human rather than papering over them.</li>
+</ol>
+<p class="why"><b>Why:</b> Required fields do not create information; they force it to be invented.</p>
+<p class="anchor">Exam Guide: 4.3 Skills in: designing schema fields as optional (nullable) when source documents may not contain the information, preventing the model from fabricating values to satisfy required fields</p>
+</div>
+<div class="ans">
+<p><b>53. Correct answer: D</b> <span class="meta">D4 &middot; Task 4.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Enumerating forty categories chases a long tail that is novel by definition, and the next unfamiliar product still has no home.</li>
+<li><span class="ltr">&times; B.</span> A single null collapses two different situations: a product that is new and one that is unreadable.</li>
+<li><span class="ltr">&times; C.</span> Free text abandons the enum's guarantee and moves the categorization problem downstream unchanged.</li>
+<li><span class="ltr">&check; D.</span> The escape hatch carries its own detail, and ambiguity gets a value of its own rather than sharing one with novelty.</li>
+</ol>
+<p class="why"><b>Why:</b> Novel and unclear are different answers and need different values.</p>
+<p class="anchor">Exam Guide: 4.3 Skills in: adding enum values like 'unclear' for ambiguous cases and 'other' + detail fields for extensible categorization</p>
+</div>
+<div class="ans">
+<p><b>54. Correct answer: C</b> <span class="meta">D4 &middot; Task 4.3</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> <code>auto</code> permits a text answer, and a pipeline that requires a record on every document cannot accept prose.</li>
+<li><span class="ltr">&times; B.</span> Forcing one type would be right if the type were known; here it misroutes every document that is not the common case.</li>
+<li><span class="ltr">&check; C.</span> The call is guaranteed while selection stays with the component that has actually read the document.</li>
+<li><span class="ltr">&times; D.</span> Deciding in code requires classifying the document first, which is the step the model is being asked to perform.</li>
+</ol>
+<p class="why"><b>Why:</b> <code>any</code> when a call is mandatory and the right schema is only knowable after reading.</p>
+<p class="anchor">Exam Guide: 4.3 Skills in: setting tool_choice: 'any' to guarantee structured output when multiple extraction schemas exist and the document type is unknown</p>
+</div>
+<div class="ans">
+<p><b>55. Correct answer: B</b> <span class="meta">D4 &middot; Task 4.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Retry with feedback is genuinely the remedy for the date group, and applying it to the second group misreads a missing document as a formatting mistake.</li>
+<li><span class="ltr">&check; B.</span> A format error is correctable from the same source; a value that is not in the input can only be satisfied by making one up.</li>
+<li><span class="ltr">&times; C.</span> Retry with validation feedback is squarely aimed at semantic and format errors, not just transport failures.</li>
+<li><span class="ltr">&times; D.</span> No amount of re-reading recovers a number that lives in an annex nobody supplied.</li>
+</ol>
+<p class="why"><b>Why:</b> Retry repairs shape; it cannot supply what the source never contained.</p>
+<p class="anchor">Exam Guide: 4.4 Knowledge of: the limits of retry: retries are ineffective when the required information is simply absent from the source document (vs format or structural errors)</p>
+</div>
+<div class="ans">
+<p><b>56. Correct answer: A</b> <span class="meta">D4 &middot; Task 4.4</span></p>
+<ol class="opts">
+<li><span class="ltr">&check; A.</span> Capturing both numbers turns an invisible disagreement into a field comparison that code can evaluate.</li>
+<li><span class="ltr">&times; B.</span> A self-assessed boolean asks the model to grade the arithmetic it just performed, in the same pass that produced the error.</li>
+<li><span class="ltr">&times; C.</span> A numeric constraint governs the format of the total, never whether it matches the items above it.</li>
+<li><span class="ltr">&times; D.</span> Reacting to ledger rejections is detection after the record has already left the pipeline.</li>
+</ol>
+<p class="why"><b>Why:</b> Extract both values and let the comparison be mechanical.</p>
+<p class="anchor">Exam Guide: 4.4 Skills in: designing self-correction validation flows: extracting 'calculated_total' alongside 'stated_total' to flag discrepancies</p>
+</div>
+<div class="ans">
+<p><b>57. Correct answer: D</b> <span class="meta">D4 &middot; Task 4.2</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> The schema is already satisfied by both outputs, so tightening it constrains a shape that is not what varies.</li>
+<li><span class="ltr">&times; B.</span> Normalizing afterwards standardizes the output while leaving the model interpreting the two structures differently.</li>
+<li><span class="ltr">&times; C.</span> Feedback needs a validation failure to fire on, and both styles pass validation.</li>
+<li><span class="ltr">&check; D.</span> Two worked examples show what the same fields look like when the document is laid out each way, which is exactly the ambiguity in play.</li>
+</ol>
+<p class="why"><b>Why:</b> When interpretation varies with document structure, show the model both structures.</p>
+<p class="anchor">Exam Guide: 4.2 Skills in: using few-shot examples to demonstrate correct handling of varied document structures (inline citations vs bibliographies)</p>
+</div>
+<div class="ans">
+<p><b>58. Correct answers: B, D</b> <span class="meta">D4 &middot; Task 4.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> Splitting bounds the blast radius without improving the first-pass rate, so the same proportion still fails.</li>
+<li><span class="ltr">&check; B.</span> Refining on a sample is what keeps a 50,000-document run from repeating this at four times the scale.</li>
+<li><span class="ltr">&times; C.</span> Reprocessing 11,600 successful documents pays for work already done, and chunking documents that fit degrades them for no reason.</li>
+<li><span class="ltr">&check; D.</span> The correlation id exists precisely so failures can be identified and reprocessed on their own.</li>
+</ol>
+<p class="why"><b>Why:</b> Reprocess only what failed, and fix the prompt before you scale it up.</p>
+<p class="anchor">Exam Guide: 4.5 Skills in: handling batch failures by resubmitting only failed documents identified by custom_id with appropriate modifications; using prompt refinement on a sample set before batch-processing large volumes</p>
+</div>
+<div class="ans">
+<p><b>59. Correct answer: B</b> <span class="meta">D5 &middot; Task 5.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> An aggregate over all types can clear a threshold while the one type being automated sits well below it.</li>
+<li><span class="ltr">&check; B.</span> The decision is scoped to one document type, so the evidence has to be scoped the same way.</li>
+<li><span class="ltr">&times; C.</span> Self-reported confidence is the model's own estimate, and it needs calibration against labeled data before it means anything.</li>
+<li><span class="ltr">&times; D.</span> An overall change rate is another aggregate, and it inherits the same masking problem as the accuracy figure.</li>
+</ol>
+<p class="why"><b>Why:</b> Measure the segment you are automating, not the average that contains it.</p>
+<p class="anchor">Exam Guide: 5.5 Knowledge of: the risk that aggregate accuracy metrics may mask poor performance on specific document types or fields; analyzing accuracy by document type and field before reducing human review</p>
+</div>
+<div class="ans">
+<p><b>60. Correct answer: B</b> <span class="meta">D5 &middot; Task 5.5</span></p>
+<ol class="opts">
+<li><span class="ltr">&times; A.</span> A guess with a footnote is still a guess in the field, and downstream consumers read the field rather than the note.</li>
+<li><span class="ltr">&check; B.</span> Ambiguity is recorded as itself, the record still satisfies the schema, and a human is directed to the case that needs judgment.</li>
+<li><span class="ltr">&times; C.</span> An empty field pushes an interpretation decision onto a system with less context than the extractor had.</li>
+<li><span class="ltr">&times; D.</span> Repetition against ambiguous wording produces a confident answer without producing a correct one.</li>
+</ol>
+<p class="why"><b>Why:</b> Say that it is unclear, and send the case to someone who can decide.</p>
+<p class="anchor">Exam Guide: 5.5 Skills in: routing extractions with low model confidence or ambiguous/contradictory source documents to human review, prioritizing limited reviewer capacity</p>
+</div>
+</div></body></html>

@@ -1,0 +1,656 @@
+<title>CCAR-F Frame Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #E9E6DD;
+    --sheet: #F7F5F0;
+    --card: #FFFFFF;
+    --ink: #1C2024;
+    --ink-soft: #575E66;
+    --ink-faint: #8B9199;
+    --line: #DEDACF;
+    --line-firm: #C8C3B5;
+    --accent: #135E58;
+    --accent-ink: #0B443F;
+    --accent-wash: #E1EDEB;
+    --c1: #135E58;
+    --c2: #3F51A0;
+    --c3: #99670F;
+    --c4: #9C4055;
+    --c1-wash: #E1EDEB;
+    --c2-wash: #E7E9F4;
+    --c3-wash: #F3EBDA;
+    --c4-wash: #F4E5E8;
+    --trap: #9AA0A6;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #101317;
+      --sheet: #181C21;
+      --card: #1F242A;
+      --ink: #E8E6E1;
+      --ink-soft: #A5ABB3;
+      --ink-faint: #757C85;
+      --line: #2C323A;
+      --line-firm: #3C444E;
+      --accent: #4FB3A7;
+      --accent-ink: #79CCC1;
+      --accent-wash: #13302D;
+      --c1: #4FB3A7;
+      --c2: #8791D6;
+      --c3: #C99A44;
+      --c4: #CE7C8E;
+      --c1-wash: #13302D;
+      --c2-wash: #1E2138;
+      --c3-wash: #2F2612;
+      --c4-wash: #2F1D22;
+      --trap: #79808A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #101317;
+    --sheet: #181C21;
+    --card: #1F242A;
+    --ink: #E8E6E1;
+    --ink-soft: #A5ABB3;
+    --ink-faint: #757C85;
+    --line: #2C323A;
+    --line-firm: #3C444E;
+    --accent: #4FB3A7;
+    --accent-ink: #79CCC1;
+    --accent-wash: #13302D;
+    --c1: #4FB3A7;
+    --c2: #8791D6;
+    --c3: #C99A44;
+    --c4: #CE7C8E;
+    --c1-wash: #13302D;
+    --c2-wash: #1E2138;
+    --c3-wash: #2F2612;
+    --c4-wash: #2F1D22;
+    --trap: #79808A;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .doc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    padding: 1.4rem 1rem 3rem;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: 8.5in;
+    min-height: 11in;
+    background: var(--sheet);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.62in 0.6in 0.5in;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rule { height: 1px; background: var(--line); border: 0; margin: 0; }
+
+  .sheet-top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: .62rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent-ink); font-weight: 500;
+  }
+  .folio {
+    font-family: var(--mono); font-size: .62rem; letter-spacing: .1em;
+    color: var(--ink-faint); font-variant-numeric: tabular-nums;
+  }
+
+  h1 {
+    font-family: var(--mono); font-weight: 600;
+    font-size: clamp(1.55rem, 3.4vw, 2.05rem);
+    letter-spacing: -.02em; line-height: 1.1;
+    margin: .8rem 0 .45rem; text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--mono); font-weight: 600; font-size: 1.05rem;
+    letter-spacing: -.01em; margin: 0 0 .15rem;
+  }
+  .lede { font-size: .875rem; color: var(--ink-soft); max-width: 62ch; margin: 0; }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  .sec { margin-top: 1.05rem; }
+  .sec-lbl {
+    font-family: var(--mono); font-size: .6rem; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
+    display: block; margin-bottom: .5rem;
+  }
+  .sec-note { font-size: .8rem; color: var(--ink-soft); margin: .1rem 0 .7rem; max-width: 66ch; }
+
+  figure { margin: 0; }
+  figure svg { display: block; width: 100%; max-width: 100%; height: auto; color: var(--ink); }
+  figcaption {
+    font-family: var(--mono); font-size: .6rem; color: var(--ink-faint);
+    text-align: right; margin-top: .3rem; letter-spacing: .02em;
+  }
+
+  /* router */
+  .router { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--card); }
+  .rt {
+    display: grid; grid-template-columns: 1fr 13.5rem; gap: .55rem 1rem;
+    align-items: center; padding: .5rem .75rem; border-top: 1px solid var(--line);
+  }
+  .rt:first-child { border-top: 0; }
+  .rt-tell { font-family: var(--mono); font-size: .685rem; color: var(--ink-soft); line-height: 1.45; }
+  .chip {
+    justify-self: start; font-family: var(--mono); font-size: .66rem; font-weight: 500;
+    padding: .22rem .55rem; border-radius: 999px; white-space: nowrap;
+    background: var(--accent-wash); color: var(--accent-ink);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .chip.alt { background: var(--c3-wash); color: var(--c3); border-color: color-mix(in srgb, var(--c3) 34%, transparent); }
+
+  /* frame cards */
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: .42rem; }
+  .fr {
+    background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+    padding: .48rem .58rem .52rem; display: flex; flex-direction: column; gap: .26rem;
+  }
+  .fr-top { display: flex; align-items: baseline; gap: .45rem; }
+  .fr-n {
+    font-family: var(--mono); font-size: .6rem; font-weight: 600; color: #fff;
+    background: var(--c1); width: 1.05rem; height: 1.05rem; border-radius: 4px;
+    display: grid; place-items: center; flex-shrink: 0; align-self: center;
+  }
+  .fr.j .fr-n { background: var(--c2); } .fr.g .fr-n { background: var(--c3); } .fr.e .fr-n { background: var(--c4); }
+  :root[data-theme="dark"] .fr-n { color: #10161a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fr-n { color: #10161a; } }
+  .fr h3 { font-family: var(--mono); font-size: .765rem; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .fr-q { font-size: .685rem; color: var(--ink-soft); font-style: italic; margin: 0 0 .04rem; }
+  .fl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .21rem; }
+  .fl li { font-size: .685rem; line-height: 1.32; color: var(--ink-soft); }
+  .fl b { color: var(--ink); font-weight: 600; }
+  .fl .to { color: var(--accent); font-weight: 700; padding: 0 .15rem; }
+  .fl code, .mono { font-family: var(--mono); font-size: .93em; }
+
+  /* lenses */
+  .lenses { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; align-items: start; }
+  .lens { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: .65rem .75rem .7rem; }
+  .lens h3 { font-family: var(--mono); font-size: .8rem; font-weight: 600; margin: 0 0 .12rem; }
+  .lens p { font-size: .715rem; color: var(--ink-soft); margin: 0 0 .4rem; }
+
+  /* discriminators: filled = the move, dashed = the trap */
+  .disc { display: flex; flex-direction: column; gap: .45rem; }
+  .dc { border: 1px solid var(--line); border-radius: 9px; background: var(--card); padding: .55rem .7rem; }
+  .dc-q { font-family: var(--mono); font-size: .68rem; color: var(--ink); font-weight: 500; margin-bottom: .4rem; }
+  .pair { display: flex; flex-wrap: wrap; gap: .35rem; align-items: stretch; }
+  .box {
+    font-size: .69rem; line-height: 1.3; padding: .3rem .5rem; border-radius: 6px; flex: 1 1 8rem; min-width: 0;
+  }
+  .box.take { background: var(--c1-wash); border: 1px solid color-mix(in srgb, var(--c1) 34%, transparent); color: var(--ink); }
+  .box.take.j { background: var(--c2-wash); border-color: color-mix(in srgb, var(--c2) 34%, transparent); }
+  .box.take.g { background: var(--c3-wash); border-color: color-mix(in srgb, var(--c3) 34%, transparent); }
+  .box.trap { background: transparent; border: 1px dashed var(--trap); color: var(--ink-faint); }
+  .box.step { background: transparent; border: 1px solid var(--line-firm); color: var(--ink-soft); }
+  .box .bl { display: block; font-family: var(--mono); font-size: .61rem; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .1rem; }
+  .box.take .bl { color: var(--c1); } .box.take.j .bl { color: var(--c2); } .box.take.g .bl { color: var(--c3); }
+  .box.trap .bl { color: var(--trap); }
+  .box.step .bl { color: var(--ink-faint); }
+
+  /* domain bars */
+  .doms { display: flex; flex-direction: column; gap: .55rem; }
+  .dm { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: .55rem .7rem .6rem; }
+  .dm-hd { display: flex; align-items: baseline; gap: .5rem; margin-bottom: .35rem; }
+  .dm-code { font-family: var(--mono); font-size: .68rem; font-weight: 600; color: var(--accent-ink); }
+  .dm-name { font-size: .78rem; font-weight: 600; }
+  .dm-w { margin-left: auto; font-family: var(--mono); font-size: .68rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .bar { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; margin-bottom: .4rem; }
+  .bar span { display: block; height: 100%; background: var(--accent); }
+  .anchors { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .anchors span {
+    font-size: .68rem; padding: .2rem .45rem; border-radius: 5px;
+    background: var(--accent-wash); color: var(--ink); border: 1px solid var(--line);
+  }
+
+  .foot { margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--line); }
+  .foot p { font-size: .68rem; color: var(--ink-faint); margin: 0 0 .3rem; line-height: 1.5; }
+  .foot a { color: var(--accent-ink); }
+  .print-note {
+    font-family: var(--mono); font-size: .6rem; color: var(--ink-faint);
+    text-align: center; letter-spacing: .04em;
+  }
+
+  @media (max-width: 720px) {
+    .frames, .lenses { grid-template-columns: 1fr; }
+    .rt { grid-template-columns: 1fr; }
+    .sheet { min-height: 0; padding: 1.1rem 1rem 1.2rem; }
+  }
+  @page { size: 8.5in 11in; margin: 0; }
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; }
+    .doc { padding: 0; gap: 0; display: block; }
+    .sheet {
+      border: 0; border-radius: 0; width: 8.5in; max-width: none;
+      height: 11in; min-height: 0; overflow: hidden;
+      margin: 0; padding: .55in .62in .36in; background: #fff;
+      break-after: page; page-break-after: always;
+    }
+    .sheet:last-child { break-after: auto; page-break-after: auto; }
+    .print-note { display: none; }
+    figure, .router, .fr, .lens, .dc, .dm { break-inside: avoid; }
+  }
+</style>
+
+<div class="doc">
+
+  <section class="sheet">
+    <div class="sheet-top">
+      <span class="eyebrow">Claude Certified Architect · Foundations</span>
+      <span class="folio">01 / 05</span>
+    </div>
+
+    <h1>CCAR-F Frame Map</h1>
+    <p class="lede">A decision framework for the Anthropic <b>Claude Certified Architect &ndash; Foundations</b> exam. Its questions drop you into a concrete situation, sometimes a system misbehaving, sometimes a design choice where no option is obviously wrong, and ask for the best decision. This map turns that into three moves: <b>read the situation, open the frame it belongs to, apply its reflex.</b> It complements the official Exam Guide, it does not replace it.</p>
+
+    <div class="sec">
+      <span class="sec-lbl">The method</span>
+      <figure>
+        <svg viewBox="0 0 760 150" role="img" aria-label="Three moves: diagnose the symptom, open the matching frame, apply its reflex and confirm against the constraint.">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+            </marker>
+          </defs>
+          <g fill="none" stroke="currentColor" stroke-width="1.25">
+            <rect x="8" y="34" width="200" height="76" rx="10"></rect>
+            <rect x="280" y="34" width="200" height="76" rx="10"></rect>
+            <rect x="552" y="34" width="200" height="76" rx="10"></rect>
+            <line x1="212" y1="72" x2="272" y2="72" marker-end="url(#ar)"></line>
+            <line x1="484" y1="72" x2="544" y2="72" marker-end="url(#ar)"></line>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity=".55">
+            <text x="108" y="26" text-anchor="middle">MOVE 1</text>
+            <text x="380" y="26" text-anchor="middle">MOVE 2</text>
+            <text x="652" y="26" text-anchor="middle">MOVE 3</text>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="currentColor">
+            <text x="108" y="66" text-anchor="middle">Diagnose</text>
+            <text x="380" y="66" text-anchor="middle">Open the frame</text>
+            <text x="652" y="66" text-anchor="middle">Apply and confirm</text>
+          </g>
+          <g font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".7">
+            <text x="108" y="88" text-anchor="middle">What kind of problem</text>
+            <text x="108" y="102" text-anchor="middle">is this, really?</text>
+            <text x="380" y="88" text-anchor="middle">One of seven. The frame</text>
+            <text x="380" y="102" text-anchor="middle">is the toolbox.</text>
+            <text x="652" y="88" text-anchor="middle">Check the answer against</text>
+            <text x="652" y="102" text-anchor="middle">the buried constraint.</text>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity=".6">
+            <text x="242" y="64" text-anchor="middle">type</text>
+            <text x="514" y="64" text-anchor="middle">reflex</text>
+          </g>
+          <g font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".75">
+            <text x="8" y="136">Read the whole scenario before the options. The clause that decides the answer is usually buried mid-paragraph, not in the last line.</text>
+          </g>
+        </svg>
+        <figcaption>Run the moves in order. Never pick a frame before reading the case.</figcaption>
+      </figure>
+    </div>
+
+    <div class="sec">
+      <span class="sec-lbl">Move 1 &middot; the router</span>
+      <p class="sec-note">Classify before you medicate. The wording on the left is what the scenario tends to say; the chip on the right is where it belongs. A question can span two frames, in which case split it and treat each part separately.</p>
+      <div class="router">
+        <div class="rt"><span class="rt-tell">inconsistent output &middot; wrong format &middot; invents values &middot; can't guarantee a step &middot; mishandles failures</span><span class="chip">1 &middot; Output Reliability</span></div>
+        <div class="rt"><span class="rt-tell">find &middot; trace &middot; locate &middot; which exploration strategy &middot; next step to understand this code</span><span class="chip">2 &middot; Codebase Navigation</span></div>
+        <div class="rt"><span class="rt-tell">coordinator &middot; subagents &middot; how information flows &middot; decompose &middot; parallel or sequential</span><span class="chip">3 &middot; Orchestration</span></div>
+        <div class="rt"><span class="rt-tell">approaching the context limit &middot; long session degrades &middot; cached results are stale &middot; resume or fork</span><span class="chip">4 &middot; Context &amp; State</span></div>
+        <div class="rt"><span class="rt-tell">where should this live &middot; who should see it &middot; CLAUDE.md, rules, skills, commands, settings</span><span class="chip">5 &middot; Configuration Placement</span></div>
+        <div class="rt"><span class="rt-tell">the customer asks for a person &middot; outside documented authority &middot; irreversible action</span><span class="chip">6 &middot; Human Escalation</span></div>
+        <div class="rt"><span class="rt-tell">balances cost and latency &middot; plan or direct &middot; sync or batch &middot; automate or keep review</span><span class="chip">7 &middot; Execution Mode</span></div>
+        <div class="rt"><span class="rt-tell">repeated calls just to discover <em>what exists</em> before doing anything</span><span class="chip alt">expose a resource, not a tool</span></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <p>Don't let the decorative technology intimidate you. Strip the jargon and ask what decision sits underneath: it is almost always one of the seven. The frame names here are study scaffolding, not official Anthropic taxonomy.</p>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-top">
+      <span class="eyebrow">Move 2 &middot; the seven frames</span>
+      <span class="folio">02 / 05</span>
+    </div>
+
+    <h1>The Seven Frames</h1>
+    <p class="lede">Each frame is a <b>type of decision</b>, never a technology. The reflexes below are defaults: a constraint buried in the scenario can overturn any of them.</p>
+
+    <div class="sec">
+      <div class="frames">
+
+        <div class="fr">
+          <div class="fr-top"><span class="fr-n">1</span><h3>Output Reliability</h3></div>
+          <p class="fr-q">The output can't be trusted. What actually fixes it?</p>
+          <ul class="fl">
+            <li>A tool exists and nobody calls it <span class="to">&rarr;</span> <b>expand its description</b></li>
+            <li>Two tools get confused for each other <span class="to">&rarr;</span> <b>rename both</b>, update both</li>
+            <li>One tool, output shape varies <span class="to">&rarr;</span> <b>split it</b> into typed tools</li>
+            <li>Descriptions are fine and it still misroutes <span class="to">&rarr;</span> check the <b>system prompt</b></li>
+            <li><span class="mono">must &middot; never &middot; before X runs</span> <span class="to">&rarr;</span> <b>deterministic mechanism</b>, not prose</li>
+            <li>Retries what can't succeed <span class="to">&rarr;</span> <b>structured error metadata</b></li>
+          </ul>
+        </div>
+
+        <div class="fr">
+          <div class="fr-top"><span class="fr-n">2</span><h3>Codebase Navigation</h3></div>
+          <p class="fr-q">How do I explore code I don't know yet?</p>
+          <ul class="fl">
+            <li>Searching content <span class="to">&rarr;</span> <b>Grep</b> &middot; searching names <span class="to">&rarr;</span> <b>Glob</b></li>
+            <li>Build understanding <b>incrementally</b>: entry points, then follow imports and trace</li>
+            <li>Wrappers re-export under new names <span class="to">&rarr;</span> <b>list every exported name first</b></li>
+            <li><span class="mono">Edit</span> fails on a non-unique match <span class="to">&rarr;</span> <b>Read, modify, Write</b></li>
+            <li>It doesn't fit the window <span class="to">&rarr;</span> <b>scoped subagents</b> returning compact reports</li>
+          </ul>
+        </div>
+
+        <div class="fr j">
+          <div class="fr-top"><span class="fr-n">3</span><h3>Orchestration</h3></div>
+          <p class="fr-q">Several agents. How does information flow?</p>
+          <ul class="fl">
+            <li>Subagents never talk to each other; <b>everything routes through the coordinator</b></li>
+            <li>Their context is <b>isolated</b> <span class="to">&rarr;</span> put every constraint in their own prompt</li>
+            <li>Delegate <b>goals and quality criteria</b>, not step-by-step procedure</li>
+            <li>Parallel work <span class="to">&rarr;</span> several delegations <b>in one response</b>, not across turns</li>
+            <li>Gaps after synthesis <span class="to">&rarr;</span> <b>assess coverage, re-delegate, re-synthesize</b></li>
+          </ul>
+        </div>
+
+        <div class="fr j">
+          <div class="fr-top"><span class="fr-n">4</span><h3>Context &amp; State</h3></div>
+          <p class="fr-q">What lives in the window, and what must survive it?</p>
+          <ul class="fl">
+            <li>Near the limit <span class="to">&rarr;</span> <b>manage what's in it</b>. Restarting with nothing carried over is the one move that always loses</li>
+            <li>Bloated tool output <span class="to">&rarr;</span> <b>prune fields</b>, keep exact values</li>
+            <li>Long multi-topic conversation <span class="to">&rarr;</span> <b>summarize what's resolved</b>, keep the live thread verbatim</li>
+            <li>Cached results are stale <span class="to">&rarr;</span> <b>fresh session, seeded with a summary, then refetch</b></li>
+          </ul>
+        </div>
+
+        <div class="fr g">
+          <div class="fr-top"><span class="fr-n">5</span><h3>Configuration Placement</h3></div>
+          <p class="fr-q">Where does this instruction live, and who sees it?</p>
+          <ul class="fl">
+            <li>Tied to a <b>path</b> <span class="to">&rarr;</span> <code>.claude/rules/</code>, glob in the frontmatter</li>
+            <li>A <b>procedure with steps</b> <span class="to">&rarr;</span> a skill, loaded on demand</li>
+            <li>A <b>universal standard</b> <span class="to">&rarr;</span> <code>CLAUDE.md</code>, always loaded</li>
+            <li>Invoked by hand <span class="to">&rarr;</span> a slash command in <code>.claude/commands/</code></li>
+            <li>A <b>hard guarantee</b> <span class="to">&rarr;</span> a hook, never a prompt</li>
+            <li>Second axis: the project directory is the team, the home directory is you alone</li>
+          </ul>
+        </div>
+
+        <div class="fr e">
+          <div class="fr-top"><span class="fr-n">6</span><h3>Human Escalation</h3></div>
+          <p class="fr-q">When does a person take over?</p>
+          <ul class="fl">
+            <li>They asked for a person <span class="to">&rarr;</span> <b>honor it immediately</b>, no investigation first</li>
+            <li>Frustrated but hasn't asked, and it's within your capability <span class="to">&rarr;</span> <b>acknowledge and offer to resolve</b>; escalate if they insist</li>
+            <li>Policy is <b>silent or ambiguous</b> on what they want <span class="to">&rarr;</span> escalate</li>
+            <li>Several possible matches <span class="to">&rarr;</span> <b>ask for an identifier</b>, don't guess</li>
+            <li>The handoff is a package: who, root cause, amount, recommended action</li>
+            <li><b>Never</b> sentiment or self-reported confidence as the trigger</li>
+          </ul>
+        </div>
+
+        <div class="fr g">
+          <div class="fr-top"><span class="fr-n">7</span><h3>Execution Mode</h3></div>
+          <p class="fr-q">Nothing is broken. In what mode do I run this?</p>
+          <ul class="fl">
+            <li>Multi-file, architectural, or several valid approaches <span class="to">&rarr;</span> <b>plan first</b>; a clear single-file fix <span class="to">&rarr;</span> <b>go direct</b></li>
+            <li>Blocking, or needs tools mid-request <span class="to">&rarr;</span> <b>synchronous</b></li>
+            <li>Overnight and latency-tolerant <span class="to">&rarr;</span> <b>batch</b></li>
+            <li>Who reviews the work <span class="to">&rarr;</span> an <b>independent instance</b>, not the one that produced it</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-top">
+      <span class="eyebrow">Move 3 &middot; the lenses</span>
+      <span class="folio">03 / 05</span>
+    </div>
+
+    <h1>Three Lenses</h1>
+    <p class="lede">The frame gives you the toolbox. These three questions run <b>on top of every frame</b>, and they are what stop a good reflex from being applied in the wrong world, at the wrong altitude, or in the wrong place.</p>
+
+    <div class="sec">
+      <span class="sec-lbl">Three lenses that cross every frame</span>
+      <div class="lenses">
+        <div class="lens">
+          <h3>Build vs Use</h3>
+          <p>Am I <b>building</b> the agent with an SDK, where the layers live in code, or <b>using</b> a finished coding agent, where configuration lives in files? A product for end users is always the first, even when the product writes code.</p>
+        </div>
+        <div class="lens">
+          <h3>Root vs Symptom</h3>
+          <p>Fix it where the value is born, with the source document still in view. Downstream work is legitimate to <b>flag</b> a problem, never to quietly paper over it. Deterministic is not the same as being in the right place.</p>
+        </div>
+        <div class="lens" style="grid-column: 1 / -1;">
+          <h3>The Reliability Ladder</h3>
+          <p>Climb only as far as the failure justifies. The test is not &ldquo;I want this to always happen&rdquo;; it is <b>what happens if it fails once</b>. Money moved wrongly buys a gate. One wasted API round trip does not.</p>
+          <figure>
+            <svg viewBox="0 0 720 150" role="img" aria-label="Five rungs from prose instruction up to architecture, with the low end marked as a band-aid and the high end as over-engineering.">
+              <g stroke="currentColor" stroke-width="1.25" fill="none">
+                <rect x="8" y="112" width="200" height="26" rx="6"></rect>
+                <rect x="8" y="84" width="240" height="26" rx="6"></rect>
+                <rect x="8" y="56" width="280" height="26" rx="6"></rect>
+                <rect x="8" y="28" width="320" height="26" rx="6"></rect>
+                <rect x="8" y="0" width="360" height="26" rx="6"></rect>
+              </g>
+              <g font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">
+                <text x="20" y="130">Instruction &middot; prose in a prompt</text>
+                <text x="20" y="102">Few-shot &middot; worked examples</text>
+                <text x="20" y="74">Context &middot; what's in the window</text>
+                <text x="20" y="46">Tool design &middot; contracts, schemas</text>
+                <text x="20" y="18">Architecture &middot; hooks, gates</text>
+              </g>
+              <g font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".7">
+                <text x="392" y="18">Too high is over-engineering: a trained classifier</text>
+                <text x="392" y="32">where a better description would do.</text>
+                <text x="392" y="122">Too low is a band-aid: asking the model nicely</text>
+                <text x="392" y="136">where the rule must be enforced.</text>
+              </g>
+              <g stroke="currentColor" stroke-width="1" opacity=".45">
+                <line x1="376" y1="13" x2="386" y2="13"></line>
+                <line x1="376" y1="125" x2="386" y2="125"></line>
+              </g>
+            </svg>
+            <figcaption>Requests ask. Mechanisms impose.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="sec-lbl">Two habits that decide more questions than any single fact</span>
+      <div class="lenses">
+        <div class="lens">
+          <h3>Exoneration clauses</h3>
+          <p>When a scenario tells you a component was reviewed and is sound, or that syntax errors are gone, it is not reassurance. It is telling you <b>where the cause is not</b>, and it usually eliminates two options before you have read them.</p>
+        </div>
+        <div class="lens">
+          <h3>Multi-part cases</h3>
+          <p>Count the problems before you look at the options, then map one fix to each. If both of your picks aim at the same half, <b>one of them is wrong by construction</b>, however good it sounds.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-top">
+      <span class="eyebrow">Move 3 &middot; near neighbors</span>
+      <span class="folio">04 / 05</span>
+    </div>
+
+    <h1>Discriminators</h1>
+    <p class="lede">The frame narrows the answer to two or three defensible options. These are what separate them. <b>Filled boxes are the move, dashed boxes are the plausible trap</b>, and outlined boxes are the steps of a procedure you run in order.</p>
+
+    <div class="sec">
+      <span class="sec-lbl">The pairs that decide the hard questions</span>
+      <div class="disc">
+
+        <div class="dc">
+          <div class="dc-q">Values keep coming back inconsistent. Constrain the field, or split the tool?</div>
+          <div class="pair">
+            <div class="box take"><span class="bl">Input is open</span>A field or parameter accepting anything <b>&rarr; enumerate the allowed values</b>, and add an escape value for genuinely novel and genuinely unclear cases.</div>
+            <div class="box take"><span class="bl">Output shape varies</span>One tool returning a table, then an object, then prose <b>&rarr; split it</b> into tools with declared return shapes.</div>
+            <div class="box trap"><span class="bl">Trap</span>Constraining the input when what varies is the output. The consumer keeps breaking.</div>
+          </div>
+        </div>
+
+        <div class="dc">
+          <div class="dc-q">The agent keeps burning calls. Better descriptions, a resource, or narrower access?</div>
+          <div class="pair">
+            <div class="box take"><span class="bl">Picks the wrong tool</span>Among tools it is entitled to use <b>&rarr; a fuller description</b>: inputs, outputs, and when to use this one over the neighbor.</div>
+            <div class="box take"><span class="bl">Asks what exists</span>Repeated exploratory calls to list what's available <b>&rarr; expose the catalog as a resource.</b></div>
+            <div class="box take"><span class="bl">Uses what isn't its job</span>Crossing a role boundary <b>&rarr; scope its tool set</b>, keeping the frequent narrow need.</div>
+            <div class="box trap"><span class="bl">Trap</span>Caching. It makes the same calls faster; a resource makes them unnecessary.</div>
+          </div>
+        </div>
+
+        <div class="dc">
+          <div class="dc-q">Judgment is inconsistent between runs. Show it, write it, or have it check itself?</div>
+          <div class="pair">
+            <div class="box take j"><span class="bl">Enumerable</span>The team can write the conditions and each is checkable <b>&rarr; explicit criteria</b>, checked one at a time.</div>
+            <div class="box take j"><span class="bl">Demonstrable</span>Granularity, where to cut, ambiguous phrasing <b>&rarr; a few worked examples</b> that show why one reading beat the other.</div>
+            <div class="box take j"><span class="bl">Neither</span>Gaps vary unpredictably and no stable list exists <b>&rarr; have it critique its own draft.</b></div>
+            <div class="box trap"><span class="bl">Trap</span>&ldquo;Be more conservative.&rdquo; An intensity dial is not a criterion, and it silences good findings too.</div>
+          </div>
+        </div>
+
+        <div class="dc">
+          <div class="dc-q">Asynchronous batch, or synchronous? Run the filters in order and stop at the first hit.</div>
+          <div class="pair">
+            <div class="box step"><span class="bl">Filter 1</span>Is anything blocked waiting on the result? <b>Synchronous.</b></div>
+            <div class="box step"><span class="bl">Filter 2</span>Does the available window cover the full processing window? If not, <b>synchronous.</b></div>
+            <div class="box step"><span class="bl">Filter 3</span>Does it need tool calls mid-request? Batch <b>cannot</b> do that.</div>
+            <div class="box take g"><span class="bl">Only then</span>Nothing fired <b>&rarr; batch</b>.</div><div class="box trap"><span class="bl">Trap</span>Reaching for the 50% saving before running the filters. The saving is what you gain, never what decides.</div>
+          </div>
+        </div>
+
+        <div class="dc">
+          <div class="dc-q">Extraction failed validation. Will retrying with feedback help?</div>
+          <div class="pair">
+            <div class="box take"><span class="bl">Yes, it's shape</span>Wrong format or structure <b>&rarr; retry with the failed output and the specific errors attached.</b></div>
+            <div class="box trap"><span class="bl">No, it's absent</span>The value only exists in a document you never supplied. Retrying pushes the model to invent it. Make the field optional and let it return nothing.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-top">
+      <span class="eyebrow">Reference &middot; where the weight sits</span>
+      <span class="folio">05 / 05</span>
+    </div>
+
+    <h1>The Five Domains</h1>
+    <p class="lede">Weights are from the official blueprint. Four of the six scenarios are drawn per sitting. <b>Study by weight, not by comfort.</b></p>
+
+    <div class="sec">
+      <div class="doms">
+
+        <div class="dm">
+          <div class="dm-hd"><span class="dm-code">D1</span><span class="dm-name">Agentic Architecture &amp; Orchestration</span><span class="dm-w">27%</span></div>
+          <div class="bar"><span style="width:100%"></span></div>
+          <div class="anchors">
+            <span>The loop runs on the model's judgment, not a decision tree</span>
+            <span>The API keeps no state; the history is resent</span>
+            <span>Subagent context is isolated</span>
+            <span>Delegate goals, not procedures</span>
+            <span>Hooks before and after a tool call</span>
+            <span>Fixed pipeline vs decomposition that adapts</span>
+          </div>
+        </div>
+
+        <div class="dm">
+          <div class="dm-hd"><span class="dm-code">D3</span><span class="dm-name">Claude Code Configuration &amp; Workflows</span><span class="dm-w">20%</span></div>
+          <div class="bar"><span style="width:74%"></span></div>
+          <div class="anchors">
+            <span>CLAUDE.md hierarchy: user, project, directory</span>
+            <span>Path-scoped rules with globs</span>
+            <span>Skills and their frontmatter</span>
+            <span>Plan first vs go direct</span>
+            <span>Refinement: examples, tests, or an interview</span>
+            <span>Non-interactive runs with a declared output schema</span>
+          </div>
+        </div>
+
+        <div class="dm">
+          <div class="dm-hd"><span class="dm-code">D4</span><span class="dm-name">Prompt Engineering &amp; Structured Output</span><span class="dm-w">20%</span></div>
+          <div class="bar"><span style="width:74%"></span></div>
+          <div class="anchors">
+            <span>A schema validates fields, never relationships between them</span>
+            <span>Required fields force fabrication; optional ones prevent it</span>
+            <span>Retry fixes shape, never absent information</span>
+            <span>Extract the stated value and the computed one, and flag the gap</span>
+            <span>Batch: cheaper, a long window, no latency promise, no mid-request tools</span>
+            <span>An independent reviewer beats self-review</span>
+          </div>
+        </div>
+
+        <div class="dm">
+          <div class="dm-hd"><span class="dm-code">D2</span><span class="dm-name">Tool Design &amp; MCP Integration</span><span class="dm-w">18%</span></div>
+          <div class="bar"><span style="width:67%"></span></div>
+          <div class="anchors">
+            <span>Descriptions are the primary selection mechanism</span>
+            <span>Too many tools degrades selection</span>
+            <span>Resources expose content; tools perform actions</span>
+            <span>Server scope: shared with the team, or personal</span>
+            <span>Credentials by environment variable, never committed</span>
+            <span>Structured errors: category, retryable, readable cause</span>
+          </div>
+        </div>
+
+        <div class="dm">
+          <div class="dm-hd"><span class="dm-code">D5</span><span class="dm-name">Context Management &amp; Reliability</span><span class="dm-w">15%</span></div>
+          <div class="bar"><span style="width:56%"></span></div>
+          <div class="anchors">
+            <span>Keep the established facts where the model reliably attends</span>
+            <span>Objective escalation triggers, never sentiment</span>
+            <span>Propagate what needs a decision, with partial results</span>
+            <span>Aggregate accuracy hides weak segments</span>
+            <span>Conflicting sources: report both, with dates</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="foot">
+      <p><b>What this is.</b> An independent study aid written while preparing for the exam. It is not affiliated with, endorsed by, or reviewed by Anthropic, and it reproduces no exam content. The frame and lens names are study scaffolding invented for this map, not official terminology.</p>
+      <p><b>How to use it.</b> Read the official Exam Guide first and treat this as the layer on top: the guide tells you what is examinable, this tells you how to decide once you are looking at four defensible options. Print to PDF from your browser for a five-page handout.</p>
+    </div>
+  </section>
+
+  <p class="print-note">Print to PDF from your browser &middot; five Letter pages</p>
+</div>

@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this material, please cite it as below."
+title: "Claude Certified Architect – Foundations: Frame Map and Practice Set"
+abstract: >-
+  A decision framework and 60 original practice items for the
+  Claude Certified Architect – Foundations certification, written from
+  the publicly published task statements in the official Exam Guide.
+  Independent material, not affiliated with or endorsed by Anthropic.
+type: dataset
+authors:
+  - family-names: "Lopez Galarza"
+    given-names: "Luis"
+    alias: "Lufeloga"
+repository-code: "https://github.com/Lufeloga/claude-certified-architect-foundations"
+license: CC-BY-4.0
+keywords:
+  - claude
+  - certification
+  - practice-exam
+  - agentic-architecture
+  - model-context-protocol

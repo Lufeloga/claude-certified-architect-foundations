@@ -1,0 +1,128 @@
+---
+name: ccar-f-practice
+description: Sit the CCAR-F practice set on a timer. Presents items one at a time, withholds all feedback until the end by default, then scores by domain against the published blueprint weights and points at the frame that covers the weakest domain.
+argument-hint: "[item count, e.g. /ccar-f-practice 20; defaults to 20]"
+allowed-tools: Read
+---
+
+# CCAR-F practice runner
+
+Run the practice set as a cold, timed sitting.
+
+The default is deliberately austere: no feedback until the end. Immediate
+feedback teaches the item, and a cold run measures whether the reasoning
+transfers. Offer the coaching mode, but do not make it the default.
+
+## Step 1 · Load the set
+
+Read `practice-set/questions.json` relative to the repository root. If it is not
+found, look one directory up, then stop and say plainly which path failed. Do
+not fall back to reading `questions.md`, which by design has no answers in it.
+
+Each item carries: `id`, `scenario`, `scenario_intro`, `domain`, `task`, `stem`,
+`options` (A to D), `key` (a list of letters), `explanations` (one per option),
+`why`, and the flags `multi_answer` and `negative`.
+
+## Step 2 · Configure
+
+Ask in a single question set:
+
+1. **How many items.** Offer 10, 20 (recommended), 30, and the full set. If the
+   user passed a number as an argument, use it and skip this question.
+2. **Which domains.** Offer all domains (recommended), or one of D1 through D5.
+3. **Feedback.** Offer "at the end" (recommended) and "after each item".
+
+Then build the queue:
+
+- filter by domain if one was chosen
+- shuffle
+- take the requested count
+- when the user asked for all domains and enough items, sample so the domain
+  mix approximates the blueprint weights below, rather than taking the first N
+  at random
+
+Record the start time before presenting the first item.
+
+## Step 3 · Run
+
+For each item, in order:
+
+1. Print a progress line: `Item N of TOTAL`. Never show a running score, which
+   turns a diagnostic into a performance.
+2. Present the scenario intro **only when the scenario changes** from the
+   previous item, so it is not repeated ten times.
+3. Ask the question with the four options as choices, labeled A to D, carrying
+   the full option text.
+   - When `multi_answer` is true, say **Select two** above the question and
+     accept two selections.
+   - When `negative` is true, present the stem exactly as written. Do not add
+     emphasis, do not warn that it is a negative item, and do not restate it in
+     the positive. Reading the stem carefully is the thing being exercised.
+4. Record the answer. Do not reveal anything.
+5. If feedback was set to "after each item", state whether it was right, give
+   the correct letters, and print the explanation for the option the user chose
+   plus the explanation for the key. If it was set to "at the end", acknowledge
+   and move on with no signal either way.
+
+Never reveal a key before the user has answered that item. Never skip or
+truncate an item mid-run.
+
+## Step 4 · Score
+
+Stop the clock. An item counts as correct only when the selected letters match
+the key exactly; a multi-answer item with one of two right is wrong.
+
+Report:
+
+```
+Items          C / N  (P%)
+Time           MM:SS      (the full set is written for 120 minutes)
+
+By domain
+  D1  Agentic Architecture & Orchestration     c/n  (p%)
+  D2  Tool Design & MCP Integration            c/n  (p%)
+  D3  Claude Code Configuration & Workflows    c/n  (p%)
+  D4  Prompt Engineering & Structured Output   c/n  (p%)
+  D5  Context Management & Reliability         c/n  (p%)
+```
+
+Show only domains that appeared in the run. For any domain with fewer than five
+items answered, print `too few items to read` in place of a percentage rather
+than a figure that will be over-read.
+
+**Do not report a scaled score, and do not print a pass or fail verdict.** The
+scoring scale belongs to the certification, and a number from a practice set
+that looks like an official one invites a false conclusion in either direction.
+Report the domain breakdown, which is the part that tells the user what to do
+next.
+
+## Step 5 · Point somewhere
+
+List every missed item as: number, the correct letters, and its `why` line.
+
+Then name the weakest domain by percentage among those with five or more items,
+and route the user to the frame that covers it in `frame-map/README.md`:
+
+| Domain | Frame |
+|---|---|
+| D1 | Orchestration, and Execution Mode |
+| D2 | Output Reliability |
+| D3 | Configuration Placement |
+| D4 | Output Reliability |
+| D5 | Context & State, and Human Escalation |
+
+Close by suggesting a re-run scoped to that domain once they have read it.
+
+## Reference
+
+Blueprint weights, for the sampling in step 2:
+D1 27%, D3 20%, D4 20%, D2 18%, D5 15%.
+
+## Rules
+
+- Keep everything outside the questions themselves short. This is a sitting, not
+  a conversation.
+- Do not coach, hint, or narrate reasoning while items are being answered.
+- Do not editorialize about difficulty before or during the run.
+- If the user abandons partway, score what was answered and say how many items
+  were left.

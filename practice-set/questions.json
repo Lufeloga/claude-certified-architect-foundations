@@ -1,0 +1,2050 @@
+{
+  "set_version": "1.0.0",
+  "license": "CC-BY-4.0",
+  "attribution": "Luis Lopez Galarza (@Lufeloga), CC BY 4.0",
+  "source": "https://github.com/Lufeloga/claude-certified-architect-foundations",
+  "disclaimer": "Independent study material. Not affiliated with, endorsed by, or reviewed by Anthropic. Reproduces no exam content.",
+  "item_count": 60,
+  "items": [
+    {
+      "id": 1,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D1",
+      "task": "1.1",
+      "guide_anchor": "1.1 Skills in: avoiding anti-patterns such as checking for assistant text content as a completion indicator",
+      "select_instruction": "",
+      "stem": "The agent sometimes stops mid-task, closing the conversation with a line like \"I'll look that up now.\" Every tool the agent called returned successfully, and the loop exits as soon as the model produces text. What is the flaw?",
+      "options": {
+        "A": "End the loop on `end_turn` rather than on the presence of assistant text.",
+        "B": "Raise `maxTurns`, which is capping the loop before the task can finish.",
+        "C": "Instruct the model to complete all tool work before producing narration.",
+        "D": "Append each tool result to the history so the model tracks what it did."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The stop signal is structural, and a single turn can carry both text and a `tool_use` block. Treating text as completion truncates work the model intended to continue.",
+        "B": "An iteration cap is a safety fuse, never the primary stopping mechanism; the loop here is ending early by design, not by exhaustion.",
+        "C": "Prose cannot repair a mechanical termination condition that fires before the model is consulted again.",
+        "D": "Dropping tool results produces an agent that loses track of its work, not one that halts while announcing an intention."
+      },
+      "distractor_families": {
+        "B": "wrong level: configuration knob for a control-flow defect",
+        "C": "prompt where a mechanism is required",
+        "D": "real anti-pattern, wrong symptom"
+      },
+      "why": "The loop terminates on `stop_reason`, and text and a tool call can arrive together.",
+      "revision": 1
+    },
+    {
+      "id": 2,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D1",
+      "task": "1.4",
+      "guide_anchor": "1.4 Skills in: implementing programmatic prerequisites that block downstream tool calls until prerequisite steps have completed",
+      "select_instruction": "",
+      "stem": "Policy requires identity verification with `get_customer` before any refund executes. The system prompt states this explicitly and was reviewed for clarity, and 3% of transcripts still show `process_refund` running first. What should be done?",
+      "options": {
+        "A": "Add explicit ordering language and two worked examples to the system prompt.",
+        "B": "Block `process_refund` programmatically until `get_customer` returns an id.",
+        "C": "Force `get_customer` with `tool_choice` on every request in the conversation.",
+        "D": "Route refunds to a subagent invoked only after verification has completed."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "This is the mechanism that already failed. Prompt instructions retain a non-zero failure rate, and the 3% is that rate.",
+        "B": "A prerequisite gate makes the out-of-order call structurally impossible rather than merely discouraged.",
+        "C": "Forcing the tool on every request is the right mechanism at the wrong scope: the agent could never return a final answer.",
+        "D": "Moving the call into a subagent relocates the work without gating it; nothing prevents the subagent from being invoked early."
+      },
+      "distractor_families": {
+        "A": "prompt where a mechanism is required",
+        "C": "right mechanism, wrong scope",
+        "D": "restructuring that leaves the guarantee unenforced"
+      },
+      "why": "When compliance must be deterministic, a request is not a guarantee.",
+      "revision": 1
+    },
+    {
+      "id": 3,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D1",
+      "task": "1.4",
+      "guide_anchor": "1.4 Skills in: compiling structured handoff summaries (customer ID, root cause, refund amount, recommended action) when escalating to human agents who lack access to the conversation transcript",
+      "select_instruction": "",
+      "stem": "The agent escalates mid-process to a human specialist who works from a separate queue and has no access to the conversation transcript. What should the handoff contain?",
+      "options": {
+        "A": "The full transcript, so the specialist can form an independent judgment.",
+        "B": "The last three messages plus a read on the customer's current tone.",
+        "C": "A session link the specialist can open to review the case directly.",
+        "D": "Customer id, root cause, refund amount, and the recommended action."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Handing over raw material transfers the reading work rather than the conclusion, and the specialist has to redo the diagnosis.",
+        "B": "Three messages are a fragment of the case, and tone is not a fact the specialist can act on.",
+        "C": "The scenario states the specialist has no transcript access, so a link resolves to nothing.",
+        "D": "A self-contained package gives the specialist identity, cause, amount at stake, and a proposed action, which is everything needed to act."
+      },
+      "distractor_families": {
+        "A": "unprocessed dump",
+        "B": "false proxy: sentiment in place of case facts",
+        "C": "assumes access the scenario denies"
+      },
+      "why": "A handoff is a decision package, not a pointer to where the decision could be reconstructed.",
+      "revision": 1
+    },
+    {
+      "id": 4,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D1",
+      "task": "1.5",
+      "guide_anchor": "1.5 Skills in: implementing PostToolUse hooks to normalize heterogeneous data formats (Unix timestamps, ISO 8601, numeric status codes) from different MCP tools before the agent processes them",
+      "select_instruction": "",
+      "stem": "Three MCP tools return order status as a Unix timestamp, an ISO 8601 string, and a numeric code respectively. All three tools are healthy and their outputs are correct. The agent's reasoning about which event came first is inconsistent. Where does normalization belong?",
+      "options": {
+        "A": "In each tool's description, documenting the timestamp format it returns.",
+        "B": "In the system prompt, as an explicit rule for comparing the three formats.",
+        "C": "In a `PreToolUse` hook that rewrites each request before it is dispatched.",
+        "D": "In a `PostToolUse` hook, before the model reasons over the returned values."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Documenting the inconsistency leaves the model to reconcile it on every comparison instead of removing the variance.",
+        "B": "A prompt rule asks the model to do conversion work reliably on every turn, which is precisely what it is failing to do.",
+        "C": "A pre-call hook intercepts the outgoing request; the heterogeneity is in what comes back.",
+        "D": "Results are transformed once, in code, before they enter the model's reasoning at all."
+      },
+      "distractor_families": {
+        "A": "documents the problem instead of resolving it",
+        "B": "prompt where a mechanism is required",
+        "C": "right mechanism, wrong direction"
+      },
+      "why": "Normalize where the variance enters, not where the model has to cope with it.",
+      "revision": 1
+    },
+    {
+      "id": 5,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D1",
+      "task": "1.3",
+      "guide_anchor": "1.3 Knowledge of: that subagent context must be explicitly provided in the prompt, subagents do not automatically inherit parent context",
+      "select_instruction": "",
+      "stem": "A specialist subagent receives a prompt naming its task and the customer id. It completes every task it is given without error, yet its resolutions repeatedly violate constraints the customer stated earlier in the conversation. What explains this?",
+      "options": {
+        "A": "Subagent context is isolated, so constraints must be restated in its prompt.",
+        "B": "The coordinator lacks `Task` in `allowedTools`, so the delegation is partial.",
+        "C": "The coordinator's context degraded before it composed the delegation prompt.",
+        "D": "Subagents retain parent memory only for the turn in which they are spawned."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A subagent sees its prompt and nothing else. A constraint stated to the coordinator never reaches it unless it is written into the delegation.",
+        "B": "Without `Task` the coordinator could not spawn the subagent at all; here the subagent runs and completes work.",
+        "C": "Degradation would produce erratic delegations across the board, not the consistent omission of one class of information.",
+        "D": "There is no partial inheritance window. Subagents do not inherit parent memory at any point."
+      },
+      "distractor_families": {
+        "B": "real requirement, contradicted by the stated symptom",
+        "C": "plausible cause, wrong failure signature",
+        "D": "invented mechanism"
+      },
+      "why": "Isolation is total, so anything the subagent must honor has to be handed to it.",
+      "revision": 1
+    },
+    {
+      "id": 6,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D1",
+      "task": "1.7",
+      "guide_anchor": "1.7 Skills in: choosing between session resumption (when prior context is mostly valid) and starting fresh with injected summaries (when prior tool results are stale)",
+      "select_instruction": "",
+      "stem": "You return to an investigation session paused five days ago. Of its 26 cached tool results, 24 are order statuses that have since changed. The reasoning the session recorded about the customer's entitlement is unaffected by those changes. What do you do?",
+      "options": {
+        "A": "Resume the session and flag in each response that statuses may be stale.",
+        "B": "Start fresh, inject a summary of the reasoning, and re-fetch the statuses.",
+        "C": "Resume the session and selectively re-fetch the 24 statuses that changed.",
+        "D": "Fork the session so both the old and the new investigation stay available."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A caveat does not stop the model from reasoning over the stale values that are still sitting in context.",
+        "B": "When the great majority of tool results are stale, the reliable move is a clean session carrying forward only the part that survived, which is the reasoning.",
+        "C": "Targeted re-fetch is the right call when most of the context still holds. Here 24 of 26 results are invalid, so the session is stale rather than lightly outdated.",
+        "D": "Forking preserves a baseline for divergent exploration, which is not the problem: there is one line of investigation and its data expired."
+      },
+      "distractor_families": {
+        "A": "band-aid that leaves the bad data in place",
+        "C": "correct technique, wrong threshold",
+        "D": "right tool for a different question"
+      },
+      "why": "Resume when context is mostly valid; restart with a summary when it mostly is not.",
+      "revision": 1
+    },
+    {
+      "id": 7,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D2",
+      "task": "2.3",
+      "guide_anchor": "2.3 Knowledge of: tool_choice configuration options: \"auto\", \"any\", and forced tool selection",
+      "select_instruction": "Select two",
+      "stem": "Which two statements correctly describe `tool_choice`?",
+      "options": {
+        "A": "Setting `any` forces a tool call but lets the model choose which one.",
+        "B": "Forcing one tool on every request prevents a final text answer.",
+        "C": "Setting `auto` guarantees the model calls at least one tool per turn.",
+        "D": "A forced tool selection persists for the remainder of the conversation."
+      },
+      "key": [
+        "A",
+        "B"
+      ],
+      "multi_answer": true,
+      "negative": false,
+      "explanations": {
+        "A": "`any` guarantees a call is made while leaving selection to the model.",
+        "B": "If every request must call the named tool, the turn that would carry the final answer is consumed by another call.",
+        "C": "`auto` leaves the model free to answer in text without calling anything; that is exactly what distinguishes it from `any`.",
+        "D": "`tool_choice` is set per request. Nothing carries it forward on its own."
+      },
+      "distractor_families": {
+        "C": "vocabulary inversion: the two settings swapped",
+        "D": "invented persistence"
+      },
+      "why": "`any` guarantees a call; `auto` does not; and forcing is per request, not a mode.",
+      "revision": 1
+    },
+    {
+      "id": 8,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D2",
+      "task": "2.4",
+      "guide_anchor": "2.4 Knowledge of: MCP resources as a mechanism for exposing content catalogs to reduce exploratory tool calls",
+      "select_instruction": "",
+      "stem": "Before answering entitlement questions the agent calls `list_plans` to see what exists, then `get_plan` for the one it needs. `list_plans` runs in nearly every conversation and the catalog changes twice a year. An engineer proposes caching its response. What is the better approach?",
+      "options": {
+        "A": "Cache the response, since the catalog changes only twice a year.",
+        "B": "Merge the two tools so a single call returns catalog and plan.",
+        "C": "Expose the plan catalog as an MCP resource the agent can consult.",
+        "D": "Sharpen the description so `list_plans` is called only when needed."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Caching is defensible and would help, but it only makes an unnecessary call cheap. The call itself is what should disappear.",
+        "B": "Merging couples a browse operation to a fetch operation and returns catalog data the agent usually does not need.",
+        "C": "A resource gives the agent visibility into what exists without spending a tool call to ask.",
+        "D": "The agent is not calling the tool by mistake; it calls it because it genuinely has no other way to see the catalog."
+      },
+      "distractor_families": {
+        "A": "optimizes the symptom",
+        "B": "over-coupling",
+        "D": "treats a visibility gap as a selection problem"
+      },
+      "why": "A resource makes the exploratory call unnecessary; a cache only makes it faster.",
+      "revision": 1
+    },
+    {
+      "id": 9,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D2",
+      "task": "2.1",
+      "guide_anchor": "2.1 Skills in: splitting generic tools into purpose-specific tools with defined input/output contracts",
+      "select_instruction": "",
+      "stem": "A `run_report` tool takes a free-text spec and returns a rendered table, a JSON object, or prose depending on what was asked. Its description is thorough and accurate, and the tool is selected correctly every time. Downstream consumers fail on 20% of calls. What is the correct fix?",
+      "options": {
+        "A": "Add an enum to the spec parameter listing the supported report types.",
+        "B": "Split it into purpose-specific tools with declared return shapes.",
+        "C": "Post-process the output into one shape before consumers receive it.",
+        "D": "Rename it and document the varying return shape in the description."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "An enum constrains what goes in. What varies here is what comes out, so the consumers keep breaking.",
+        "B": "Each report type becomes a tool with a typed parameter and a single declared return shape, which is a contract consumers can rely on.",
+        "C": "A normalization layer hides the variance from consumers while leaving three shapes flowing through the system.",
+        "D": "The description is already accurate and selection already works; documenting the variance does not remove it."
+      },
+      "distractor_families": {
+        "A": "constrains the input when the output is what varies",
+        "C": "band-aid downstream",
+        "D": "documents the problem instead of resolving it"
+      },
+      "why": "Varying input takes an enum; varying output takes separate tools.",
+      "revision": 1
+    },
+    {
+      "id": 10,
+      "scenario": "Customer Support Resolution Agent",
+      "scenario_intro": "You are building a customer support resolution agent with the Claude Agent SDK and MCP tools (`get_customer`, `lookup_order`, `process_refund`, `escalate_to_human`), targeting 80%+ first-contact resolution.",
+      "domain": "D5",
+      "task": "5.2",
+      "guide_anchor": "5.2 Knowledge of: why sentiment-based escalation and self-reported confidence scores are unreliable proxies for actual case complexity",
+      "select_instruction": "",
+      "stem": "Which is the weakest basis for escalating a conversation to a human?",
+      "options": {
+        "A": "The customer has explicitly asked to speak with a person.",
+        "B": "The request falls outside the agent's documented authority.",
+        "C": "The agent reports low confidence in the answer it produced.",
+        "D": "Three turns have passed with no progress on the issue."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": true,
+      "explanations": {
+        "A": "An explicit request for a human is the strongest trigger there is, and it is honored immediately.",
+        "B": "Acting outside documented authority is exactly the boundary escalation exists to respect.",
+        "C": "A self-reported score is the model grading its own work, and it correlates poorly with whether the case is actually beyond the agent.",
+        "D": "Lack of progress is observable from the outside and does not depend on the model assessing itself."
+      },
+      "distractor_families": {
+        "A": "strongest trigger, offered as if weak",
+        "B": "policy boundary, objectively checkable",
+        "D": "objective progress signal"
+      },
+      "why": "Escalation triggers should be observable, not self-reported.",
+      "revision": 1
+    },
+    {
+      "id": 11,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D3",
+      "task": "3.3",
+      "guide_anchor": "3.3 Skills in: creating .claude/rules/ files with YAML frontmatter path scoping so rules load only when editing matching files",
+      "select_instruction": "",
+      "stem": "Conventions for database migrations apply only when someone edits files under `migrations/`. They must load without anyone invoking them, and they should not occupy context when the work is elsewhere. Where do they belong?",
+      "options": {
+        "A": "In a skill under `.claude/skills/` described as covering migrations.",
+        "B": "In the project `CLAUDE.md`, under a clearly marked migrations heading.",
+        "C": "In a rules file with a `paths` glob that matches `migrations/`.",
+        "D": "In a `.claude/commands/` command run before touching a migration."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A skill is invoked on demand. Its description makes it findable, not automatic, so the conventions load only when someone thinks to ask.",
+        "B": "`CLAUDE.md` is always loaded, so the conventions would occupy context during every unrelated task.",
+        "C": "Path-scoped rules load automatically and only when a matching file is being edited, which is both requirements at once.",
+        "D": "A command depends on the engineer remembering to run it, which is the automatic loading the scenario rules out."
+      },
+      "distractor_families": {
+        "A": "on-demand where automatic is required",
+        "B": "always-loaded where conditional is required",
+        "D": "depends on human recall"
+      },
+      "why": "Automatic plus conditional is exactly what a path glob buys you.",
+      "revision": 1
+    },
+    {
+      "id": 12,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D3",
+      "task": "3.2",
+      "guide_anchor": "3.2 Skills in: choosing between skills (on-demand invocation for task-specific workflows) and CLAUDE.md (always-loaded universal standards)",
+      "select_instruction": "",
+      "stem": "The team has a nine-step release procedure run about twice a month, and a file naming convention that applies to every file in the repository. Both are currently pasted into chat by hand. How should they be handled?",
+      "options": {
+        "A": "The release procedure as a skill, the naming convention in `CLAUDE.md`.",
+        "B": "Both as skills, so that neither one loads until it becomes relevant.",
+        "C": "The release procedure in `CLAUDE.md`, the naming convention as a rule.",
+        "D": "The release procedure as a command, the naming convention as a skill."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A long procedure needed twice a month is on-demand work; a convention that governs every file is a universal standard that should always be loaded.",
+        "B": "Making the naming convention on-demand means it is absent from the many edits where nobody thinks to invoke it.",
+        "C": "This inverts both: a nine-step procedure occupies context permanently while a repository-wide rule loads only for some paths.",
+        "D": "A command is a reasonable home for a procedure, but putting a universal convention behind on-demand invocation repeats the error in B."
+      },
+      "distractor_families": {
+        "B": "on-demand where always-loaded is required",
+        "C": "both halves inverted",
+        "D": "half right, universal standard still gated"
+      },
+      "why": "Frequency and scope decide the home: universal and always, or specific and on demand.",
+      "revision": 1
+    },
+    {
+      "id": 13,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D3",
+      "task": "3.1",
+      "guide_anchor": "3.1 Knowledge of: the CLAUDE.md configuration hierarchy: user-level (~/.claude/CLAUDE.md), project-level, and directory-level; user-level settings are not shared with teammates via version control",
+      "select_instruction": "",
+      "stem": "An engineer wants her personal preferences applied in every repository she works in, while the team's conventions must reach everyone who clones this one. Which pair is correct?",
+      "options": {
+        "A": "`~/.claude/config.json` for hers, the repository `CLAUDE.md` for the team.",
+        "B": "`.claude/settings.yaml` for hers, the `.claude/rules/` directory for the team.",
+        "C": "The repository `CLAUDE.md` for both, with hers in a clearly marked section.",
+        "D": "`~/.claude/CLAUDE.md` for hers, the repository `CLAUDE.md` for the team."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The project half is right, but instructions for Claude live in `CLAUDE.md`; there is no `config.json` in this hierarchy.",
+        "B": "`.claude/rules/` is a real home for team conventions, but a settings file is not where personal instructions go, and this pair puts hers inside the repository.",
+        "C": "Anything committed to the repository reaches everyone who clones it, so her preferences would be imposed on the team.",
+        "D": "User-level configuration follows the person across every repository and is never shared; project-level travels with the clone."
+      },
+      "distractor_families": {
+        "A": "invented artifact",
+        "B": "invented artifact, half-plausible pairing",
+        "C": "scope collision: personal settings shared with the team"
+      },
+      "why": "The axis is who receives it: the user everywhere, or everyone who clones this repository.",
+      "revision": 1
+    },
+    {
+      "id": 14,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D3",
+      "task": "3.4",
+      "guide_anchor": "3.4 Skills in: selecting direct execution for well-understood changes with clear scope (e.g., a single-file bug fix with a clear stack trace)",
+      "select_instruction": "",
+      "stem": "A developer asks for a fix to a null dereference in one utility function. She has the stack trace and the failing input, and the function has no other callers under change. What is the best first step?",
+      "options": {
+        "A": "Enter plan mode so the change is scoped before any edit is made.",
+        "B": "Make the fix directly and review the resulting diff with her.",
+        "C": "Write a failing test first and iterate on it until it passes.",
+        "D": "Explore the function's call sites before changing anything at all."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Plan mode earns its cost on architectural decisions and multi-file work; here the scope is one function and the cause is already known.",
+        "B": "A single-file fix with a known cause and a known failing input is the textbook case for direct execution.",
+        "C": "Test-driven iteration is valuable when behavior is unclear, but the failing input is already in hand and the fix is one line of judgment.",
+        "D": "Call-site exploration matters when a signature changes; the scenario states the callers are not in scope."
+      },
+      "distractor_families": {
+        "A": "over-ceremony for a scoped change",
+        "C": "good practice, wrong trigger",
+        "D": "investigation the scenario already closed"
+      },
+      "why": "Plan mode is for choosing among approaches, not for changes with one obvious shape.",
+      "revision": 1
+    },
+    {
+      "id": 15,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D3",
+      "task": "3.5",
+      "guide_anchor": "3.5 Skills in: using the interview pattern to surface design considerations before implementing solutions in unfamiliar domains",
+      "select_instruction": "",
+      "stem": "A team is adding rate limiting to a service for the first time. Nobody has worked with it before, and when asked what behavior they want they are unsure what they even need to specify. Which approach fits best?",
+      "options": {
+        "A": "Supply input and output examples of limited and unlimited requests.",
+        "B": "Enter plan mode so the design is reviewed before implementation.",
+        "C": "Have the agent ask questions that surface what they have not considered.",
+        "D": "Implement a first version directly and refine it once the gaps appear."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Examples are the strongest tool when you know the transformation you want. This team cannot yet state it.",
+        "B": "Plan mode produces a plan from the requirements you bring it, and the requirements are the missing piece.",
+        "C": "The interview pattern surfaces the considerations a team new to a domain does not know to raise, which is precisely the stated gap.",
+        "D": "Building first and discovering the requirements through rework is the cost the interview is meant to avoid."
+      },
+      "distractor_families": {
+        "B": "right technique, missing precondition",
+        "A": "requires knowledge the team lacks",
+        "D": "discovery by rework"
+      },
+      "why": "When the team cannot state the requirement, elicit it before designing to it.",
+      "revision": 1
+    },
+    {
+      "id": 16,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D5",
+      "task": "5.4",
+      "guide_anchor": "5.4 Skills in: having agents maintain scratchpad files recording key findings, referencing them for subsequent questions to counteract context degradation",
+      "select_instruction": "",
+      "stem": "Two hours into a refactor the agent begins citing patterns typical of such services rather than what is in this repository, and repeats work it already completed. The code it produced earlier in the session was correct. What should be done?",
+      "options": {
+        "A": "Move to a model configuration with a larger context window.",
+        "B": "Clear the context and restart with what has been learned so far.",
+        "C": "Persist the refactor state to a scratchpad and work from that file.",
+        "D": "Summarize the session so far and continue in the same session."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A larger window delays the same degradation without addressing where the findings live.",
+        "B": "Clearing discards the specific discoveries that are the expensive part of the session.",
+        "C": "A scratchpad moves the findings out of the window entirely, so they survive degradation and can be referenced deliberately.",
+        "D": "An in-session summary is a reasonable step, but it leaves the record inside the same degrading context it is meant to protect."
+      },
+      "distractor_families": {
+        "A": "irrelevant lever",
+        "B": "nuke and reset",
+        "D": "right instinct, wrong storage"
+      },
+      "why": "Degradation is about where findings live, not how much room they have.",
+      "revision": 1
+    },
+    {
+      "id": 17,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D5",
+      "task": "5.1",
+      "guide_anchor": "5.1 Skills in: placing key findings summaries at the beginning of aggregated inputs and organizing detailed results with explicit section headers to mitigate position effects",
+      "select_instruction": "",
+      "stem": "A code review agent produces a long report. Reviewers act on the first and last sections and consistently miss issues in the middle, including severe ones. The findings themselves have been verified as accurate. What addresses this?",
+      "options": {
+        "A": "Drop findings below a severity threshold so the report is shorter.",
+        "B": "Split the report into one comment attached to each affected file.",
+        "C": "Append a summary at the end so that nothing goes unnoticed.",
+        "D": "Lead with the key findings and add headers that make it navigable."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Filtering by severity removes real findings to work around a position effect, and the missed issues include severe ones.",
+        "B": "Per-file comments are a genuine improvement in delivery, but each one still has a middle that readers skim.",
+        "C": "A trailing summary reinforces the end, which is already one of the two positions readers do attend to.",
+        "D": "Front-loading what matters and giving the body explicit structure works with the way long inputs are read rather than against it."
+      },
+      "distractor_families": {
+        "A": "suppresses findings to hide the symptom",
+        "B": "plausible delivery change, same failure inside",
+        "C": "reinforces a position that already works"
+      },
+      "why": "Information in the middle gets lost, so put what matters where attention lands.",
+      "revision": 1
+    },
+    {
+      "id": 18,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D5",
+      "task": "5.4",
+      "guide_anchor": "5.4 Skills in: spawning subagents to investigate specific questions while the main agent preserves high-level coordination",
+      "select_instruction": "",
+      "stem": "You must assess whether a deprecation affects any of 11 packages, each around 80 files with its own conventions. The combined relevant code runs to several times your context window. Which approach fits?",
+      "options": {
+        "A": "Grep the symbol across all packages and read the lines around each hit.",
+        "B": "Map each package from its imports before reading any implementation.",
+        "C": "Read the three largest packages in depth and generalize from those.",
+        "D": "Delegate one scoped subagent per package, each returning call sites."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Grep finds the direct hits and misses every package that renames the symbol behind a wrapper, which is likely across 11 sets of conventions.",
+        "B": "Structural mapping is the right opening move for understanding one unfamiliar package, but eleven maps still land in the same window.",
+        "C": "Generalizing from three packages assumes the other eight follow their conventions, which the scenario explicitly denies.",
+        "D": "Each subagent absorbs the exploration in its own context and returns a compact answer, so the coordinator holds only conclusions."
+      },
+      "distractor_families": {
+        "A": "misses aliasing across conventions",
+        "B": "right technique, wrong scale",
+        "C": "sampling presented as coverage"
+      },
+      "why": "When the material exceeds the window, delegate the reading and keep the conclusions.",
+      "revision": 1
+    },
+    {
+      "id": 19,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D5",
+      "task": "5.1",
+      "guide_anchor": "5.1 Skills in: trimming verbose tool outputs to only relevant fields before they accumulate in context; extracting transactional facts into a persistent block outside summarized history",
+      "select_instruction": "Select two",
+      "stem": "A session is approaching its context limit. Tool outputs carry more than forty fields each, of which the agent uses four, and the conversation spans several topics that are already resolved. Which two actions are appropriate?",
+      "options": {
+        "A": "Prune each tool output to the four fields the agent actually uses.",
+        "B": "Switch to a model configuration with a larger context window.",
+        "C": "Summarize the resolved topics, keeping the active thread verbatim.",
+        "D": "Start a new session so that the context is clean from this point."
+      },
+      "key": [
+        "A",
+        "C"
+      ],
+      "multi_answer": true,
+      "negative": false,
+      "explanations": {
+        "A": "Thirty-six unused fields per call are pure accumulation, and trimming them is the cheapest reclamation available.",
+        "B": "A larger window postpones the limit without reducing what is consuming it.",
+        "C": "Compressing what is settled while preserving what is live is the shape progressive summarization is meant to take.",
+        "D": "A clean session discards the resolved history along with the active thread that still needs it."
+      },
+      "distractor_families": {
+        "B": "irrelevant lever",
+        "D": "nuke and reset"
+      },
+      "why": "Reclaim context by removing what is unused and compressing what is finished.",
+      "revision": 1
+    },
+    {
+      "id": 20,
+      "scenario": "Code Generation with Claude Code",
+      "scenario_intro": "You are configuring Claude Code for a team that shares one repository.",
+      "domain": "D5",
+      "task": "5.4",
+      "guide_anchor": "5.4 Skills in: summarizing key findings from one exploration phase before spawning sub-agents for the next phase, injecting summaries into initial context",
+      "select_instruction": "",
+      "stem": "Which of these is not an appropriate response to a session approaching its context limit?",
+      "options": {
+        "A": "Summarizing the portions of the conversation that are already resolved.",
+        "B": "Pruning verbose tool outputs down to the fields the agent actually uses.",
+        "C": "Persisting the working state externally and continuing from that file.",
+        "D": "Clearing the context and starting over without carrying a summary."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": true,
+      "explanations": {
+        "A": "Compressing settled material is the standard way to reclaim room without losing the thread.",
+        "B": "Field pruning removes accumulation that was never contributing to the reasoning.",
+        "C": "Externalizing state is what allows work to cross a context boundary intact.",
+        "D": "Starting over with nothing carried forward throws away the findings the session was assembling, which is the cost the other three avoid."
+      },
+      "distractor_families": {
+        "A": "valid technique offered as if wrong",
+        "B": "valid technique offered as if wrong",
+        "C": "valid technique offered as if wrong"
+      },
+      "why": "Every remedy here preserves the findings except the one that discards them.",
+      "revision": 1
+    },
+    {
+      "id": 21,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D1",
+      "task": "1.2",
+      "guide_anchor": "1.2 Skills in: designing coordinator agents that analyze query requirements and dynamically select which subagents to invoke rather than always routing through the full pipeline",
+      "select_instruction": "",
+      "stem": "The coordinator spawns the same five subagents for every query. Narrow questions come back with overlapping material, and broad ones leave whole areas uncovered. Each subagent completes its assignment successfully. What is the root cause?",
+      "options": {
+        "A": "The subagents cannot see each other's work, so overlap goes unnoticed.",
+        "B": "The decomposition is fixed rather than derived from the query itself.",
+        "C": "The synthesis step has no criteria for resolving overlapping claims.",
+        "D": "Five full reports exceed what the coordinator can hold at synthesis."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Subagent isolation is by design, and the coordinator is the component meant to prevent overlap by partitioning scope before delegating.",
+        "B": "One pipeline for every query is too much machinery for a narrow question and too little for a broad one, which is exactly the two symptoms reported.",
+        "C": "Deduplicating at synthesis tidies the output after the redundant work has already been paid for, and it does nothing for the uncovered areas.",
+        "D": "A capacity ceiling would truncate results, not produce coverage that is simultaneously duplicated and incomplete."
+      },
+      "distractor_families": {
+        "A": "describes the architecture, not the defect",
+        "C": "band-aid downstream",
+        "D": "wrong failure signature"
+      },
+      "why": "The coordinator should choose the decomposition per query, not run a fixed pipeline.",
+      "revision": 1
+    },
+    {
+      "id": 22,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D1",
+      "task": "1.2",
+      "guide_anchor": "1.2 Skills in: implementing iterative refinement loops where the coordinator evaluates synthesis output for gaps, re-delegates to search and analysis subagents with targeted queries, and re-invokes synthesis until coverage is sufficient",
+      "select_instruction": "",
+      "stem": "After synthesis, the report leaves two of the original sub-questions unanswered. The team wants the system to close those gaps itself rather than shipping an incomplete report. Which design fits?",
+      "options": {
+        "A": "Raise the number of subagents so more ground is covered on the first pass.",
+        "B": "Have the synthesis subagent flag each gap so the reader knows what is missing.",
+        "C": "Score coverage against the sub-questions, re-delegate, and re-synthesize.",
+        "D": "Have each subagent verify its own coverage before it returns to the coordinator."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "More parallel work widens the first pass without ever checking whether the questions were answered.",
+        "B": "Annotating the gaps is honest reporting and worth doing, but the team asked for the system to close them, not to describe them.",
+        "C": "Evaluating the synthesis against the original sub-questions and re-delegating targeted queries is the loop that converges on coverage.",
+        "D": "A subagent can confirm it finished its own assignment; it cannot know which sub-questions the report as a whole still misses."
+      },
+      "distractor_families": {
+        "A": "more capacity where a control loop is needed",
+        "B": "reports the gap instead of closing it",
+        "D": "verification at the wrong altitude"
+      },
+      "why": "Coverage is a property of the whole report, so only the coordinator can judge it.",
+      "revision": 1
+    },
+    {
+      "id": 23,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D1",
+      "task": "1.3",
+      "guide_anchor": "1.3 Skills in: spawning parallel subagents by emitting multiple Task tool calls in a single coordinator response rather than across separate turns",
+      "select_instruction": "",
+      "stem": "The coordinator needs four independent literature searches before drafting. It currently spawns them one per turn, each waiting for the previous to return, and latency is roughly four times what the team expected. What should change?",
+      "options": {
+        "A": "Build one composite search tool that runs the four searches internally.",
+        "B": "Have the first subagent emit `Task` calls for the other three beneath it.",
+        "C": "Emit the four `Task` calls within a single coordinator response.",
+        "D": "Keep the sequence and narrow each subagent's scope to shorten it."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A composite tool builds new infrastructure to obtain parallelism the coordinator can already express natively.",
+        "B": "Nested spawning does run the work concurrently, but it moves three subagents outside the coordinator's view and breaks hub-and-spoke observability.",
+        "C": "Multiple `Task` calls in one response start the four searches together while every result still returns to the coordinator.",
+        "D": "Four shorter serial steps are still four serial steps, and the searches are independent."
+      },
+      "distractor_families": {
+        "A": "new infrastructure over native capability",
+        "B": "correct outcome, loses observability",
+        "D": "optimizes within the wrong structure"
+      },
+      "why": "Parallelism comes from one response carrying several calls, not from nesting agents.",
+      "revision": 1
+    },
+    {
+      "id": 24,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D1",
+      "task": "1.3",
+      "guide_anchor": "1.3 Knowledge of: the Task tool as the mechanism for spawning subagents, and the requirement that allowedTools must include Task for a coordinator to invoke subagents",
+      "select_instruction": "",
+      "stem": "The coordinator produces a written plan naming which subagents should run, then answers the question itself with no subagent executing. The subagent definitions are correct and their prompts have been reviewed. What is the most likely cause?",
+      "options": {
+        "A": "`Task` is absent from the coordinator's allowed tools, so it cannot spawn.",
+        "B": "The system prompt frames delegation as guidance rather than as instruction.",
+        "C": "The subagent descriptions do not make clear when each of them applies.",
+        "D": "`maxTurns` is too low for the delegation round trip to complete in time."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The coordinator reasons about delegation correctly and then has no mechanism to act, which is exactly what reasoning-but-not-executing looks like.",
+        "B": "Softly worded delegation would produce inconsistent spawning across runs, not a plan that names the right subagents and then never invokes any.",
+        "C": "Poor descriptions cause the wrong subagent to be chosen; here the coordinator names the right ones.",
+        "D": "A turn ceiling truncates work in progress rather than preventing the first call from ever being emitted."
+      },
+      "distractor_families": {
+        "B": "prompt cause, wrong signature",
+        "C": "selection problem, wrong symptom",
+        "D": "configuration knob, wrong failure mode"
+      },
+      "why": "Naming the right subagent and never calling it points at the tool, not the prompt.",
+      "revision": 1
+    },
+    {
+      "id": 25,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D1",
+      "task": "1.6",
+      "guide_anchor": "1.6 Skills in: selecting task decomposition patterns appropriate to the workflow: prompt chaining for predictable multi-aspect reviews, dynamic decomposition for open-ended investigation",
+      "select_instruction": "",
+      "stem": "The coordinator must produce a comparative market report on three companies. Which step cannot run in parallel with the others?",
+      "options": {
+        "A": "Retrieving the last four quarterly filings for each of the three companies.",
+        "B": "Searching recent news coverage for each of the three companies by name.",
+        "C": "Collecting analyst ratings for the three from two subscription sources.",
+        "D": "Writing the assessment that weighs the three companies against each other."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": true,
+      "explanations": {
+        "A": "Filing retrieval is per company and depends on nothing else in the list.",
+        "B": "News searches are independent per company and can be issued at once.",
+        "C": "Rating collection touches two sources and no other step's output.",
+        "D": "A comparison consumes all three companies' material, so it can only start once the gathering steps have returned."
+      },
+      "distractor_families": {
+        "A": "independent gathering step",
+        "B": "independent gathering step",
+        "C": "independent gathering step"
+      },
+      "why": "Gathering fans out; the step that consumes every branch has to wait.",
+      "revision": 1
+    },
+    {
+      "id": 26,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D2",
+      "task": "2.1",
+      "guide_anchor": "2.1 Skills in: renaming tools and updating descriptions to eliminate functional overlap (e.g., renaming analyze_content to extract_web_results with a web-specific description)",
+      "select_instruction": "",
+      "stem": "The coordinator exposes `analyze_content` for retrieved web pages and `analyze_document` for uploaded files. Each description is accurate about its own tool and neither is malformed. Traces show uploaded PDFs routed to `analyze_content` in 38% of cases, and both invoked on the same item. What is the most effective fix?",
+      "options": {
+        "A": "Expand `analyze_content`'s description until it excludes uploaded files.",
+        "B": "Merge the two into one tool that branches internally on the input type.",
+        "C": "Restrict `analyze_document` to the document analysis subagent's tool set.",
+        "D": "Rename both and have each description say when the other one applies."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Adding exclusions to one side leaves the other still describing itself in terms that fit both, so the boundary is only half drawn.",
+        "B": "Merging removes the confusion by removing the distinction, which costs the specificity that made two tools worth having.",
+        "C": "Scoping stops one subagent from reaching the wrong tool, but the coordinator itself is the component doing the misrouting.",
+        "D": "Names that do not compete, plus descriptions that each point at the other's territory, remove the ambiguity from both sides at once."
+      },
+      "distractor_families": {
+        "A": "one-sided fix for a two-sided overlap",
+        "B": "collapses a useful distinction",
+        "C": "right mechanism, wrong actor"
+      },
+      "why": "Overlap lives between two descriptions, so both have to change.",
+      "revision": 1
+    },
+    {
+      "id": 27,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D2",
+      "task": "2.3",
+      "guide_anchor": "2.3 Skills in: providing scoped cross-role tools for high-frequency needs (e.g., a verify_fact tool for the synthesis agent) while routing complex cases through the coordinator",
+      "select_instruction": "",
+      "stem": "The synthesis subagent has no search tools by design. Review shows that in 15% of reports it needed to confirm a single figure, and a small share of those cases require reconciling sources that contradict each other. What is the most effective change?",
+      "options": {
+        "A": "Give it the full `web_search` tool set the research subagents use.",
+        "B": "Give it a scoped `verify_fact` tool and route contradictions upward.",
+        "C": "Keep its tool set as it is and have the coordinator verify each figure.",
+        "D": "Move verification into the report step that runs after synthesis."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Handing a synthesis agent the full research kit is the over-broad access that leads agents to misuse tools outside their specialization.",
+        "B": "A narrow tool covers the frequent simple need in place, while the harder judgment stays with the component that can see all the sources.",
+        "C": "Pre-verifying every figure pays the cost on 100% of figures to serve the 15% that need it.",
+        "D": "Verifying after synthesis means the claim has already been written into the report before anyone checks it."
+      },
+      "distractor_families": {
+        "A": "over-broad tool access",
+        "C": "cost on everything for a minority need",
+        "D": "verification after the commitment"
+      },
+      "why": "Scope the frequent simple case locally and escalate the rare hard one.",
+      "revision": 1
+    },
+    {
+      "id": 28,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D2",
+      "task": "2.2",
+      "guide_anchor": "2.2 Skills in: returning structured error metadata including errorCategory, isRetryable boolean, and human-readable descriptions; distinguishing between access failures and valid empty results",
+      "select_instruction": "Select two",
+      "stem": "A document analysis subagent hits several failures in one run: a source times out and succeeds on retry, another returns a persistent authorization error, and a third returns zero matches. Which two responses follow the guidance?",
+      "options": {
+        "A": "Return `isError: false` for the authorization failure, since nothing came back.",
+        "B": "Report the zero-match source as a valid empty result rather than an error.",
+        "C": "Return `isError` with a category, a retryable flag, and a readable cause.",
+        "D": "Return a uniform `source unavailable` status so all failures look alike."
+      },
+      "key": [
+        "B",
+        "C"
+      ],
+      "multi_answer": true,
+      "negative": false,
+      "explanations": {
+        "A": "Reporting a permission failure as an empty result silently converts a problem into an answer, and the coordinator never learns it needs credentials.",
+        "B": "A successful query that matched nothing is information, not a fault, and labeling it an error would trigger pointless retries.",
+        "C": "Category, retryability, and a readable cause are exactly what let the coordinator choose between retrying, escalating, and moving on.",
+        "D": "A uniform message is what prevents recovery: the coordinator cannot tell a timeout worth retrying from a permission wall that never will be."
+      },
+      "distractor_families": {
+        "A": "silent suppression",
+        "D": "generic error hiding the context"
+      },
+      "why": "An empty result is an answer; a failure needs enough structure to act on.",
+      "revision": 1
+    },
+    {
+      "id": 29,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D2",
+      "task": "2.4",
+      "guide_anchor": "2.4 Skills in: choosing existing community MCP servers over custom implementations for standard integrations (e.g., Jira), reserving custom servers for team-specific workflows",
+      "select_instruction": "",
+      "stem": "The team wants to connect a widely used issue tracker with a maintained community MCP server. A developer proposes writing their own instead, to keep full control. What do you tell them?",
+      "options": {
+        "A": "Write the custom server, since control over a central integration is worth it.",
+        "B": "Write the custom server, because the tracker touches every team process.",
+        "C": "Wrap the community server in a custom one to add team-specific behavior.",
+        "D": "Use the community server and keep custom builds for team-specific work."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Control over a standard integration buys little and costs the ongoing maintenance of an API surface someone else already tracks.",
+        "B": "How central the tracker is argues for a well-maintained integration, not for a bespoke one the team must keep current alone.",
+        "C": "Wrapping is the right instinct once there is genuine team-specific behavior to add, but nothing in the scenario says there is any yet.",
+        "D": "Standard integrations are where community servers are strongest, and custom effort is reserved for what only this team needs."
+      },
+      "distractor_families": {
+        "A": "control framed as value",
+        "B": "importance framed as justification",
+        "C": "premature abstraction"
+      },
+      "why": "Build custom where the workflow is yours, not where the integration is standard.",
+      "revision": 1
+    },
+    {
+      "id": 30,
+      "scenario": "Multi-Agent Research System",
+      "scenario_intro": "You are building a multi-agent research system: a coordinator delegating to web search, document analysis and synthesis subagents, producing a cited report.",
+      "domain": "D5",
+      "task": "5.6",
+      "guide_anchor": "5.6 Knowledge of: how to handle conflicting statistics from credible sources: annotating conflicts with source attribution rather than arbitrarily selecting one value; requiring publication or collection dates to enable correct temporal interpretation",
+      "select_instruction": "",
+      "stem": "Two sources report headcount for the same company: a regulatory filing dated March states 4,200, and a press article dated September states 3,850. Both sources are credible. The report must be defensible to the client. What should the agent do?",
+      "options": {
+        "A": "Report both figures with their sources and their collection dates attached.",
+        "B": "Report the filing's figure, since regulatory filings outrank press coverage.",
+        "C": "Report the September figure, since the later reading supersedes the earlier.",
+        "D": "Report the average of the two, with a note describing the range observed."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "With both values dated and attributed, the reader can see whether this is a contradiction or a company that shrank over six months.",
+        "B": "Ranking sources by type discards a later observation on the strength of a general rule about credibility.",
+        "C": "Preferring the newer figure assumes the two are measuring the same moment, which is the very thing the dates would settle.",
+        "D": "Averaging invents a number that neither source reported and that describes no point in time."
+      },
+      "distractor_families": {
+        "B": "arbitrary source ranking",
+        "C": "assumes contradiction without checking dates",
+        "D": "fabricates a value"
+      },
+      "why": "Dates decide whether two figures conflict or simply describe different moments.",
+      "revision": 1
+    },
+    {
+      "id": 31,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D2",
+      "task": "2.5",
+      "guide_anchor": "2.5 Skills in: selecting Glob for finding files matching naming patterns (e.g., **/*.test.tsx)",
+      "select_instruction": "",
+      "stem": "A job must run against every component test file in the monorepo. The convention is a `.test.tsx` suffix, three legacy directories still use `.spec.tsx`, and some test files import shared helpers while others define their own. What produces the complete list most reliably?",
+      "options": {
+        "A": "Grep for `describe(` and `it(`, collecting every file that matches.",
+        "B": "Glob for `**/*.test.tsx` and `**/*.spec.tsx`, then merge the two.",
+        "C": "Grep for imports of the shared helpers and collect those files.",
+        "D": "Glob for `**/*.tsx` and read each file to decide what it is."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Searching for a test function name finds files by their contents, which misses any suite written with a different harness and catches non-test files that mention it.",
+        "B": "Both naming conventions are file path patterns, so two globs cover the whole population exactly.",
+        "C": "The scenario states some test files define their own helpers, so this misses them by construction.",
+        "D": "Reading every `.tsx` file in a monorepo to classify it works, at a cost far above matching two patterns."
+      },
+      "distractor_families": {
+        "A": "content search for a path problem",
+        "C": "criterion the scenario already excludes",
+        "D": "correct but grossly inefficient"
+      },
+      "why": "Finding files by name is a Glob question; Grep answers questions about contents.",
+      "revision": 1
+    },
+    {
+      "id": 32,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D2",
+      "task": "2.5",
+      "guide_anchor": "2.5 Knowledge of: when Edit fails due to non-unique text matches, using Read + Write as a fallback for reliable file modifications",
+      "select_instruction": "",
+      "stem": "A configuration constant appears in seven places in one file, and only the occurrence inside the staging block should change. The `Edit` call fails because the target text is not unique. What do you do?",
+      "options": {
+        "A": "Extend the search text with surrounding lines until the match is unique.",
+        "B": "Use a replace-all edit and then revert the six unintended changes.",
+        "C": "Read the file, change the intended occurrence, and write it back whole.",
+        "D": "Append the corrected constant at the end so the later value wins."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Widening the anchor sometimes works and is worth a try, but it depends on the surrounding lines happening to differ, which seven repetitions in one file make unlikely.",
+        "B": "Making six wrong changes in order to make one right one leaves the file correct only if every revert lands.",
+        "C": "Reading the full contents and writing them back is the documented fallback precisely because it does not depend on a unique anchor existing.",
+        "D": "Appending a duplicate definition changes behavior through shadowing rather than editing the value that was meant to change."
+      },
+      "distractor_families": {
+        "A": "two-valid-one-superior: works only if the file cooperates",
+        "B": "damage-then-repair",
+        "D": "side effect standing in for an edit"
+      },
+      "why": "When Edit has no unique anchor, Read plus Write is the reliable path.",
+      "revision": 1
+    },
+    {
+      "id": 33,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D2",
+      "task": "2.5",
+      "guide_anchor": "2.5 Skills in: tracing function usage across wrapper modules by first identifying all exported names, then searching for each name across the codebase",
+      "select_instruction": "",
+      "stem": "You need every call site of `validateToken`, which is exported from `auth/core.ts` and re-exported under different names by three wrapper modules. The wrappers themselves are documented and correct. What is the correct first move?",
+      "options": {
+        "A": "Grep for `validateToken` repository-wide and compile the matches found.",
+        "B": "Glob for the files under `auth/` and read each one of them in turn.",
+        "C": "Read the library and wrappers for every exported name, then search each.",
+        "D": "Grep for imports of `auth/core` and trace outward from those files."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Searching the original name finds only the callers that use it, and the wrappers exist precisely to expose other names.",
+        "B": "The callers are spread across the codebase; reading the `auth/` directory describes the source, not its consumers.",
+        "C": "Enumerating the aliases first turns one incomplete search into a complete set of searches.",
+        "D": "Import tracing finds the wrappers themselves, then stops one hop short of the code that calls them by their new names."
+      },
+      "distractor_families": {
+        "A": "single-name search under aliasing",
+        "B": "explores the definition, not the usage",
+        "D": "stops one hop short"
+      },
+      "why": "Enumerate the aliases before searching, or the search is incomplete by construction.",
+      "revision": 1
+    },
+    {
+      "id": 34,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D2",
+      "task": "2.5",
+      "guide_anchor": "2.5 Skills in: building codebase understanding incrementally: starting with Grep to find entry points, then using Read to follow imports and trace flows, rather than reading all files upfront",
+      "select_instruction": "",
+      "stem": "You must understand how retry backoff is reached in an unfamiliar 28-file service before changing it. The whole service fits comfortably inside your context window. Which approach fits best?",
+      "options": {
+        "A": "Read all 28 files in order so nothing in the service is missed.",
+        "B": "Glob for the files whose names reference retry or backoff logic.",
+        "C": "Delegate the survey to a subagent and work from the report it returns.",
+        "D": "Grep the retry entry points, read those, and follow their imports."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Reading everything fits here, but it spends the whole window on a question about one flow and buries the answer in unrelated material.",
+        "B": "File names are a weak proxy for behavior, and backoff logic frequently lives in files named for something else.",
+        "C": "Delegation earns its overhead when the material will not fit; the scenario states that it does.",
+        "D": "Finding the entry points and following imports traces the actual path through the service, which is the thing being asked about."
+      },
+      "distractor_families": {
+        "A": "exhaustive where targeted is better",
+        "B": "names as a proxy for behavior",
+        "C": "right technique, precondition denied"
+      },
+      "why": "Trace the flow from its entry points instead of ingesting the whole service.",
+      "revision": 1
+    },
+    {
+      "id": 35,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D3",
+      "task": "3.1",
+      "guide_anchor": "3.1 Skills in: using the /memory command to verify which memory files are loaded and diagnose inconsistent behavior across sessions",
+      "select_instruction": "",
+      "stem": "Two engineers working in the same repository, on the same version, get noticeably different behavior from the assistant. Both have pulled the latest commit. What is the first step to diagnose it?",
+      "options": {
+        "A": "Check which memory files each session has actually loaded.",
+        "B": "Compare their user-level settings files line by line for drift.",
+        "C": "Have both re-clone the repository to rule out a stale checkout.",
+        "D": "Consolidate every project convention into one `CLAUDE.md` file."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Different behavior on identical code means different instructions are in play, and listing what each session loaded shows that directly.",
+        "B": "User-level files are one plausible source of the difference, but reading them by hand guesses at what is loaded instead of observing it.",
+        "C": "Both engineers are on the same commit, so the checkout is not the variable.",
+        "D": "Consolidation might mask the difference without ever revealing which layer caused it."
+      },
+      "distractor_families": {
+        "B": "right suspicion, indirect method",
+        "C": "rules out a variable the scenario fixed",
+        "D": "remedy before diagnosis"
+      },
+      "why": "Observe which configuration layers loaded before theorizing about which one differs.",
+      "revision": 1
+    },
+    {
+      "id": 36,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D1",
+      "task": "1.6",
+      "guide_anchor": "1.6 Skills in: splitting large code reviews into per-file local analysis passes plus a separate cross-file integration pass to avoid attention dilution",
+      "select_instruction": "",
+      "stem": "A review across 40 changed files produces findings that contradict one another and misses issues in the middle of the set. The review criteria themselves have been validated on smaller changes. How should the review be decomposed?",
+      "options": {
+        "A": "Run the same review once more against a more capable model tier.",
+        "B": "Review only the files carrying the largest diffs in the change set.",
+        "C": "Ask the model to re-read the full set before it states conclusions.",
+        "D": "Run per-file local passes plus one separate cross-file integration pass."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Attention dilutes across 40 files regardless of tier, and the criteria are already known to work at smaller scale.",
+        "B": "Diff size is a poor proxy for risk, and the approach abandons coverage rather than restoring it.",
+        "C": "A second read of the same oversized input reproduces the same middle-of-the-set gap.",
+        "D": "Local issues get a focused pass per file, and the interactions that produce contradictions get a pass of their own."
+      },
+      "distractor_families": {
+        "A": "irrelevant lever",
+        "B": "sampling presented as coverage",
+        "C": "repeats the failing approach"
+      },
+      "why": "Split by concern: local findings per file, interactions in their own pass.",
+      "revision": 1
+    },
+    {
+      "id": 37,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D1",
+      "task": "1.1",
+      "guide_anchor": "1.1 Skills in: avoiding anti-patterns such as parsing natural language signals to determine loop termination",
+      "select_instruction": "",
+      "stem": "Which of these does not describe how the agentic loop operates?",
+      "options": {
+        "A": "It continues on `tool_use` and terminates when `end_turn` is returned.",
+        "B": "Tool results are appended to the history sent with the next request.",
+        "C": "The program reads the assistant's text to judge whether work is done.",
+        "D": "The model decides at each step whether to call a tool or to answer."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": true,
+      "explanations": {
+        "A": "This is the loop's control flow exactly as specified.",
+        "B": "Appending results is what lets the model reason about what it has already learned.",
+        "C": "Reading natural language to infer completion is the named anti-pattern; the signal is structural, not textual.",
+        "D": "Model-driven decision making at each step is what separates an agentic loop from a fixed sequence."
+      },
+      "distractor_families": {
+        "A": "correct behavior offered as if wrong",
+        "B": "correct behavior offered as if wrong",
+        "D": "correct behavior offered as if wrong"
+      },
+      "why": "The loop reads `stop_reason`, never the prose.",
+      "revision": 1
+    },
+    {
+      "id": 38,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D1",
+      "task": "1.5",
+      "guide_anchor": "1.5 Skills in: implementing tool call interception hooks that block policy-violating actions and redirect to alternative workflows; choosing hooks over prompt-based enforcement when business rules require guaranteed compliance",
+      "select_instruction": "",
+      "stem": "Policy states that deletions above a threshold must never execute without a recorded approval. Deletions can be requested at any point in a session, and the current prompt-based rule is followed in the large majority of cases. Which mechanism enforces this?",
+      "options": {
+        "A": "A `PreToolUse` hook that blocks the call and routes it to approval.",
+        "B": "A `PostToolUse` hook that records the approval once deletion completes.",
+        "C": "`tool_choice` forcing the approval tool on the turn after the request.",
+        "D": "A system prompt rule stating the threshold, plus two worked examples."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Intercepting before execution is the only point at which the deletion can still be prevented rather than merely noted.",
+        "B": "A post-execution hook produces an audit trail of deletions that already happened, which is not what never-without-approval means.",
+        "C": "Forcing a tool shapes what the model calls next; it does not stop a call the model has already decided to make.",
+        "D": "Examples raise compliance and leave a residual failure rate, which a policy written as never does not tolerate."
+      },
+      "distractor_families": {
+        "B": "right mechanism, too late",
+        "C": "shapes selection, does not block",
+        "D": "prompt where a mechanism is required"
+      },
+      "why": "Never means the action has to be impossible, not merely discouraged.",
+      "revision": 1
+    },
+    {
+      "id": 39,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D1",
+      "task": "1.3",
+      "guide_anchor": "1.3 Knowledge of: the AgentDefinition configuration including descriptions, system prompts, and tool restrictions; that subagent context must be explicitly provided in the prompt",
+      "select_instruction": "Select two",
+      "stem": "Which two statements are correct about subagent configuration?",
+      "options": {
+        "A": "The `allowedTools` list restricts which tools the subagent may call.",
+        "B": "A subagent inherits the coordinator's conversation history automatically.",
+        "C": "A subagent's `systemPrompt` is inherited unless it is explicitly set.",
+        "D": "A coordinator can spawn subagents only if `Task` is among its tools."
+      },
+      "key": [
+        "A",
+        "D"
+      ],
+      "multi_answer": true,
+      "negative": false,
+      "explanations": {
+        "A": "Tool restriction per subagent is what keeps each one inside its specialization.",
+        "B": "Subagent context is isolated, which is why anything it must know has to be written into its prompt.",
+        "C": "Each subagent definition carries its own system prompt; there is no inheritance to fall back on.",
+        "D": "Without `Task` the coordinator can reason about delegating and never actually delegate."
+      },
+      "distractor_families": {
+        "B": "invented inheritance",
+        "C": "invented inheritance"
+      },
+      "why": "Subagents inherit nothing: prompt, context, and tools are all declared per definition.",
+      "revision": 1
+    },
+    {
+      "id": 40,
+      "scenario": "Developer Productivity with Claude",
+      "scenario_intro": "You are building developer productivity tools with the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, and automate repetitive tasks, using the built-in tools (Read, Write, Bash, Grep, Glob) and integrating with MCP servers.",
+      "domain": "D1",
+      "task": "1.7",
+      "guide_anchor": "1.7 Skills in: using fork_session to create parallel exploration branches (e.g., comparing two testing strategies or refactoring approaches from a shared codebase analysis)",
+      "select_instruction": "",
+      "stem": "You want to compare two refactoring approaches that both start from the same completed codebase analysis, and you expect to revisit both branches later. What fits?",
+      "options": {
+        "A": "Fork the session so each approach branches from the shared baseline.",
+        "B": "Resume the analysis session twice in succession by its session name.",
+        "C": "Start two fresh sessions, injecting the analysis summary into each.",
+        "D": "Continue the most recent session once the first approach is finished."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Forking gives two independent branches that share the analysis without either overwriting the other.",
+        "B": "Resuming the same session twice extends one line of work; the second run inherits whatever the first one did.",
+        "C": "Fresh sessions with an injected summary do isolate the branches, at the cost of re-deriving context the baseline already holds in full.",
+        "D": "Continuing serializes the comparison and lets the first approach's context shape the second."
+      },
+      "distractor_families": {
+        "B": "same session, not a branch",
+        "C": "two-valid-one-superior: isolation at the price of the baseline",
+        "D": "serializes what should diverge"
+      },
+      "why": "Divergent branches from one baseline is what forking is for.",
+      "revision": 1
+    },
+    {
+      "id": 41,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D3",
+      "task": "3.6",
+      "guide_anchor": "3.6 Skills in: running Claude Code in CI with the -p flag; using --output-format json with --json-schema to produce machine-parseable structured findings for automated posting as inline PR comments",
+      "select_instruction": "",
+      "stem": "A nightly job must run the assistant without any interaction and emit machine-readable findings that a later step posts automatically as inline comments. Which invocation is correct?",
+      "options": {
+        "A": "Set `CLAUDE_HEADLESS=1` and parse the job's standard output.",
+        "B": "Run with `--batch` and read the aggregated results file it writes.",
+        "C": "Run with `-p`, `--output-format json`, and `--json-schema`.",
+        "D": "Run interactively in the container and capture the terminal output."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "There is no such environment variable, and parsing free-form output is what structured output exists to replace.",
+        "B": "There is no `--batch` flag on the CLI; batching is a property of the API, not of a Claude Code invocation.",
+        "C": "Non-interactive mode prevents the hang, and the two output flags together produce findings a later step can post without parsing prose.",
+        "D": "Running interactively in CI is what hangs the job waiting for input that never arrives."
+      },
+      "distractor_families": {
+        "A": "invented artifact",
+        "B": "invented artifact",
+        "D": "the failure mode the flag exists to prevent"
+      },
+      "why": "Non-interactive plus a declared schema is what makes CI output usable downstream.",
+      "revision": 1
+    },
+    {
+      "id": 42,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D3",
+      "task": "3.6",
+      "guide_anchor": "3.6 Knowledge of: session context isolation: why the same Claude session that generated code is less effective at reviewing its own changes compared to an independent review instance",
+      "select_instruction": "",
+      "stem": "The pipeline reviews several pull requests within one run, and reviewers notice comments on one pull request that reference code belonging to another. Each review on its own is accurate. What should the pipeline do?",
+      "options": {
+        "A": "Clear the context between pull requests inside the same session.",
+        "B": "Run each pull request in a session isolated from the others.",
+        "C": "Reduce how many pull requests are handled in a single run.",
+        "D": "Instruct the agent to consider only the current diff each time."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Clearing inside one session depends on the clearing being complete every time, which is a weaker guarantee than never sharing the context at all.",
+        "B": "Separate sessions make cross-contamination structurally impossible rather than something the pipeline has to remember to prevent.",
+        "C": "Fewer pull requests per run reduces how often the bleed happens without removing the cause.",
+        "D": "An instruction asks the model not to use context that is still sitting in front of it."
+      },
+      "distractor_families": {
+        "A": "right direction, weaker guarantee",
+        "C": "reduces exposure, not cause",
+        "D": "prompt where isolation is required"
+      },
+      "why": "Isolation by construction beats an instruction to ignore what is present.",
+      "revision": 1
+    },
+    {
+      "id": 43,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D3",
+      "task": "3.6",
+      "guide_anchor": "3.6 Skills in: including prior review findings in context when re-running reviews after new commits, instructing Claude to report only new or still-unaddressed issues to avoid duplicate comments",
+      "select_instruction": "",
+      "stem": "When the review re-runs after new commits, it posts duplicate comments on issues that were already raised and discussed in the thread. The findings themselves are accurate. What should change?",
+      "options": {
+        "A": "Supply the prior findings and ask for new or unaddressed issues only.",
+        "B": "Review only the diff introduced by the most recent commit each time.",
+        "C": "Deduplicate the comments after they have been posted to the thread.",
+        "D": "Run the review a single time, when the pull request is first opened."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The agent repeats itself because each run starts blind; giving it the prior findings is what lets it tell new from already-said.",
+        "B": "Restricting to the latest diff hides issues that earlier commits introduced and later commits never touched.",
+        "C": "Post-hoc deduplication cleans the thread after the noise has already reached the developers.",
+        "D": "Reviewing once abandons the point of re-running, which is to catch what the new commits introduce."
+      },
+      "distractor_families": {
+        "B": "narrows scope and loses coverage",
+        "C": "band-aid downstream",
+        "D": "removes the capability instead of fixing it"
+      },
+      "why": "An agent cannot avoid repeating what it was never told it already said.",
+      "revision": 1
+    },
+    {
+      "id": 44,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D3",
+      "task": "3.6",
+      "guide_anchor": "3.6 Skills in: providing existing test files in context so test generation avoids suggesting duplicate scenarios already covered by the test suite",
+      "select_instruction": "",
+      "stem": "Generated tests frequently duplicate scenarios the existing suite already covers. The duplicated tests are themselves correct and they pass. What addresses this?",
+      "options": {
+        "A": "Ask for a smaller number of generated tests on each run.",
+        "B": "Filter out duplicates after the generation step completes.",
+        "C": "Generate tests only for files that currently have no coverage.",
+        "D": "Provide the existing test files in context during generation."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Fewer tests means proportionally fewer duplicates and proportionally fewer new ones too.",
+        "B": "Filtering afterwards spends the generation on work that is discarded and needs a reliable equivalence check.",
+        "C": "File-level coverage is too coarse: a covered file can still have uncovered branches, which is where the useful tests are.",
+        "D": "Once the agent can see what the suite already asserts, it stops proposing it."
+      },
+      "distractor_families": {
+        "A": "reduces volume, not redundancy",
+        "B": "band-aid downstream",
+        "C": "wrong granularity"
+      },
+      "why": "The agent duplicates what it cannot see.",
+      "revision": 1
+    },
+    {
+      "id": 45,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D3",
+      "task": "3.6",
+      "guide_anchor": "3.6 Skills in: documenting testing standards, valuable test criteria, and available fixtures in CLAUDE.md to improve test generation quality and reduce low-value test output",
+      "select_instruction": "",
+      "stem": "The tests the CI job generates are low value: trivial assertions, the wrong fixtures, and coverage of paths nobody cares about. The job invocation and output handling are both correct. What is the most effective change?",
+      "options": {
+        "A": "Document the standards, what makes a test valuable, and the fixtures.",
+        "B": "Add few-shot examples of well-written tests to the prompt used in CI.",
+        "C": "Raise the model tier the continuous integration job runs against.",
+        "D": "Have a second instance review the generated tests before they land."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "All three symptoms are missing project knowledge, and the always-loaded project file is where CI-invoked runs pick that knowledge up.",
+        "B": "Examples are strong for format and for ambiguous judgment calls, but they cannot tell the agent which fixtures this repository has.",
+        "C": "A stronger model still cannot know which paths this team considers worth covering.",
+        "D": "Review catches bad tests after they are written rather than causing better ones to be written."
+      },
+      "distractor_families": {
+        "B": "two-valid-one-superior: right technique, cannot supply the missing facts",
+        "C": "irrelevant lever",
+        "D": "inspection instead of specification"
+      },
+      "why": "Quality complaints that are really missing context get fixed by supplying the context.",
+      "revision": 1
+    },
+    {
+      "id": 46,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D3",
+      "task": "3.5",
+      "guide_anchor": "3.5 Knowledge of: test-driven iteration: writing test suites first, then iterating by sharing test failures to guide progressive improvement",
+      "select_instruction": "",
+      "stem": "A module has a suite of assertions that already define its expected behavior, including its edge cases, and the implementation is now being written against them. Which refinement technique fits?",
+      "options": {
+        "A": "Iterate by sharing the failing tests until the suite passes.",
+        "B": "Provide two or three input and output examples to work from.",
+        "C": "Have the agent interview the team about the module's design.",
+        "D": "Enter plan mode before any implementation code is written."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The suite already encodes the specification, so each failure is a precise, checkable instruction for the next iteration.",
+        "B": "Examples communicate a transformation when no executable specification exists; here one already does, in more detail.",
+        "C": "An interview surfaces requirements nobody has stated, and the edge cases are stated already.",
+        "D": "Plan mode weighs approaches, and the approach here is to satisfy an existing suite."
+      },
+      "distractor_families": {
+        "B": "weaker form of a specification already present",
+        "C": "elicits what is already written down",
+        "D": "deliberation where the target is fixed"
+      },
+      "why": "When the specification is executable, failures are the feedback loop.",
+      "revision": 1
+    },
+    {
+      "id": 47,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D4",
+      "task": "4.5",
+      "guide_anchor": "4.5 Knowledge of: batch processing is appropriate for non-blocking, latency-tolerant workloads and inappropriate for blocking workflows; the batch API does not support multi-turn tool calling within a single request",
+      "select_instruction": "",
+      "stem": "The pipeline runs two workloads. A pre-merge check blocks the merge and requires the agent to call repository tools while it reasons. A weekly audit of the whole repository is read on Monday mornings and is submitted the preceding Friday. How should each be run?",
+      "options": {
+        "A": "Both with the batch API, since both are bounded and repeatable jobs.",
+        "B": "Both synchronously, because batch carries no guaranteed latency floor.",
+        "C": "Pre-merge with batch at pull request open, and the audit synchronously.",
+        "D": "Pre-merge synchronously, and the weekly audit with the batch API."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The pre-merge check fails two batch preconditions at once: it blocks a person, and it needs tool calls inside a single request.",
+        "B": "Running the weekly audit synchronously is correct but pays full price for a job with three days of slack.",
+        "C": "This is the correct reasoning applied to the wrong workload, and the batch limitation on mid-request tool calls makes the pre-merge check unrunnable.",
+        "D": "The blocking, tool-calling workload goes synchronous; the latency-tolerant one takes the savings."
+      },
+      "distractor_families": {
+        "A": "ignores the blocking constraint",
+        "B": "safe but leaves savings on the table",
+        "C": "assignments inverted"
+      },
+      "why": "Batch suits work nobody is waiting on and that needs no tools mid-request.",
+      "revision": 1
+    },
+    {
+      "id": 48,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D4",
+      "task": "4.6",
+      "guide_anchor": "4.6 Knowledge of: self-review limitations: a model retains reasoning context from generation, making it less likely to question its own decisions in the same session; independent review instances are more effective than self-review instructions or extended thinking",
+      "select_instruction": "",
+      "stem": "The team wants to catch subtle defects in code the same pipeline generated earlier in the run. Which approach is least effective?",
+      "options": {
+        "A": "Reviewing in a separate instance that lacks the generation context.",
+        "B": "Having the generating session review its own output while thinking.",
+        "C": "Splitting the review into per-file passes plus a cross-file pass.",
+        "D": "Having the review self-report confidence per finding for triage."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": true,
+      "explanations": {
+        "A": "An instance without the generator's reasoning has no commitment to the decisions it is inspecting.",
+        "B": "The session that produced the code carries the reasoning that made it look right, and more deliberation inside that same context does not dislodge it.",
+        "C": "Splitting the passes addresses attention dilution, which is a different failure and a real one.",
+        "D": "Per-finding confidence does not catch defects by itself, but it routes maintainer attention usefully."
+      },
+      "distractor_families": {
+        "A": "the recommended approach offered as if weak",
+        "C": "valid technique for a neighboring problem",
+        "D": "valid triage aid"
+      },
+      "why": "Self-review inherits the reasoning that produced the defect.",
+      "revision": 1
+    },
+    {
+      "id": 49,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D4",
+      "task": "4.1",
+      "guide_anchor": "4.1 Knowledge of: how general instructions like 'be conservative' or 'only report high-confidence findings' fail to improve precision compared to specific categorical criteria",
+      "select_instruction": "",
+      "stem": "The review reports 14 findings per pull request and developers act on 4. The noise is concentrated in style-adjacent observations about patterns that are established conventions in this repository. A developer proposes adding \"only report high-confidence issues\" to the prompt. What is the most effective change?",
+      "options": {
+        "A": "Add the proposed instruction, since it directly targets over-reporting.",
+        "B": "Have the agent critique its findings and drop the ones it cannot justify.",
+        "C": "Name explicitly which issue classes to report and which ones to skip.",
+        "D": "Attach a confidence score to each finding and suppress the low ones."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Confidence is not the problem: the agent is highly confident about style observations that this team simply does not want.",
+        "B": "Self-critique helps where the gaps vary unpredictably; here the unwanted class is stable and nameable, so it can just be excluded.",
+        "C": "The noise falls in one identifiable category, and a criterion that names it removes the category without touching the findings developers act on.",
+        "D": "A numeric threshold is the same confidence filter in numeric clothing, and it drops accurate findings alongside unwanted ones."
+      },
+      "distractor_families": {
+        "A": "intensity dial in place of a criterion",
+        "B": "right technique, wrong trigger",
+        "D": "false proxy: confidence for relevance"
+      },
+      "why": "If you can name the category you do not want, name it instead of tuning a dial.",
+      "revision": 1
+    },
+    {
+      "id": 50,
+      "scenario": "Claude Code for Continuous Integration",
+      "scenario_intro": "You are integrating Claude Code into your CI/CD pipeline. It runs automated code reviews, generates test cases, and gives feedback on pull requests, and your prompts need to be actionable and to minimize false positives.",
+      "domain": "D4",
+      "task": "4.3",
+      "guide_anchor": "4.3 Knowledge of: tool use with JSON schemas as the most reliable approach for guaranteed schema-compliant structured output; 3.6 --output-format json and --json-schema for enforcing structured output in CI",
+      "select_instruction": "Select two",
+      "stem": "The continuous integration job must decide automatically whether to block a merge. Which two approaches produce output the pipeline can rely on?",
+      "options": {
+        "A": "Ask for JSON in the prompt and parse the model's text output.",
+        "B": "Have the agent write prose and search it for a verdict keyword.",
+        "C": "Define a tool whose input is the verdict schema and read `tool_use`.",
+        "D": "Run headless with `--output-format json` and a declared verdict schema."
+      },
+      "key": [
+        "C",
+        "D"
+      ],
+      "multi_answer": true,
+      "negative": false,
+      "explanations": {
+        "A": "Asking for JSON in prose produces JSON most of the time, and a pipeline that blocks merges cannot run on most of the time.",
+        "B": "Keyword search over prose is the least reliable option here: a single hedged sentence flips the verdict.",
+        "C": "A schema attached to a tool makes the response structurally conformant instead of hopefully conformant.",
+        "D": "The CLI flags enforce the same guarantee at the invocation level, which is where a pipeline consumes it."
+      },
+      "distractor_families": {
+        "A": "request instead of enforcement",
+        "B": "parsing prose for a decision"
+      },
+      "why": "A schema enforces the shape; a prompt only requests it.",
+      "revision": 1
+    },
+    {
+      "id": 51,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.3",
+      "guide_anchor": "4.3 Knowledge of: that strict JSON schemas via tool use eliminate syntax errors but do not prevent semantic errors (e.g., line items that don't sum to total, values in wrong fields)",
+      "select_instruction": "",
+      "stem": "The pipeline uses tool use with a strict JSON schema, and the team confirms that schema violations and JSON syntax errors no longer occur. Operations reports that 8% of records carry the purchase order number in the invoice number field, and 5% have line items that do not sum to the declared total. What is the most likely cause?",
+      "options": {
+        "A": "Field descriptions do not distinguish the two identifier fields clearly.",
+        "B": "The values are semantically wrong, which a schema has no way to detect.",
+        "C": "Source layouts vary, so few-shot examples are needed for consistency.",
+        "D": "The model is fabricating values for fields the documents do not contain."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Sharper descriptions would help the misplaced identifier, and they say nothing about arithmetic that does not add up.",
+        "B": "A schema constrains shape and type. Both symptoms are well-formed values that happen to be wrong, which is exactly the gap schema enforcement leaves open.",
+        "C": "Layout variation produces inconsistent extraction, not values landing confidently in the wrong field.",
+        "D": "Fabrication fills fields that have no source; here the source has both values and they are being placed and summed incorrectly."
+      },
+      "distractor_families": {
+        "A": "explains half the symptom",
+        "C": "plausible cause, wrong signature",
+        "D": "different failure mode"
+      },
+      "why": "Valid structure and wrong content are independent, and only one of them has a schema.",
+      "revision": 1
+    },
+    {
+      "id": 52,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.3",
+      "guide_anchor": "4.3 Skills in: designing schema fields as optional (nullable) when source documents may not contain the information, preventing the model from fabricating values to satisfy required fields",
+      "select_instruction": "",
+      "stem": "A contract schema includes `governing_law`, `renewal_term`, and `liability_cap`, and 30% of contracts genuinely omit at least one of the three. Which approach is least appropriate?",
+      "options": {
+        "A": "Keeping all three required so every record arrives downstream complete.",
+        "B": "Declaring them nullable and instructing a null when the clause is absent.",
+        "C": "Adding an \"unclear\" value for clauses present but ambiguously worded.",
+        "D": "Flagging records that contain nulls so a reviewer confirms the omission."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": true,
+      "explanations": {
+        "A": "A required field the document does not contain leaves the model one way to satisfy the schema, which is to invent a value. Completeness is bought with fabrication.",
+        "B": "Nullable plus an explicit instruction gives absence a way to be recorded truthfully.",
+        "C": "An \"unclear\" value separates a clause that is missing from one that is present but unreadable.",
+        "D": "Flagging nulls routes the genuine gaps to a human rather than papering over them."
+      },
+      "distractor_families": {
+        "B": "correct design offered as if wrong",
+        "C": "correct design offered as if wrong",
+        "D": "correct design offered as if wrong"
+      },
+      "why": "Required fields do not create information; they force it to be invented.",
+      "revision": 1
+    },
+    {
+      "id": 53,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.3",
+      "guide_anchor": "4.3 Skills in: adding enum values like 'unclear' for ambiguous cases and 'other' + detail fields for extensible categorization",
+      "select_instruction": "",
+      "stem": "A product schema uses an enum of eight categories that covers 94% of listings. The remainder are genuinely novel products, and a separate handful of listings are worded too vaguely to categorize at all. What should the schema add?",
+      "options": {
+        "A": "Forty categories in place of eight, so novel products find a match.",
+        "B": "A nullable category field that the model leaves empty when unsure.",
+        "C": "A free-text category with a mapping table maintained downstream.",
+        "D": "An \"other\" value with a detail field, plus an \"unclear\" value."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Enumerating forty categories chases a long tail that is novel by definition, and the next unfamiliar product still has no home.",
+        "B": "A single null collapses two different situations: a product that is new and one that is unreadable.",
+        "C": "Free text abandons the enum's guarantee and moves the categorization problem downstream unchanged.",
+        "D": "The escape hatch carries its own detail, and ambiguity gets a value of its own rather than sharing one with novelty."
+      },
+      "distractor_families": {
+        "A": "enumerating an open set",
+        "B": "collapses two distinct cases",
+        "C": "moves the problem downstream"
+      },
+      "why": "Novel and unclear are different answers and need different values.",
+      "revision": 1
+    },
+    {
+      "id": 54,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.3",
+      "guide_anchor": "4.3 Skills in: setting tool_choice: 'any' to guarantee structured output when multiple extraction schemas exist and the document type is unknown",
+      "select_instruction": "",
+      "stem": "Three document types arrive through the same pipeline, each with its own extraction tool and schema. The type is not known until the document has been read, and every document must produce a structured record. Which `tool_choice` setting fits?",
+      "options": {
+        "A": "`auto`, so the model can decide whether extraction is needed at all.",
+        "B": "Forced selection on the tool for the most common document type.",
+        "C": "`any`, so a tool must be called and the model picks the schema.",
+        "D": "No tool at all, deciding the schema in code before making the call."
+      },
+      "key": [
+        "C"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "`auto` permits a text answer, and a pipeline that requires a record on every document cannot accept prose.",
+        "B": "Forcing one type would be right if the type were known; here it misroutes every document that is not the common case.",
+        "C": "The call is guaranteed while selection stays with the component that has actually read the document.",
+        "D": "Deciding in code requires classifying the document first, which is the step the model is being asked to perform."
+      },
+      "distractor_families": {
+        "A": "permits the outcome the pipeline forbids",
+        "B": "right mechanism, unknown precondition",
+        "D": "assumes the classification already exists"
+      },
+      "why": "`any` when a call is mandatory and the right schema is only knowable after reading.",
+      "revision": 1
+    },
+    {
+      "id": 55,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.4",
+      "guide_anchor": "4.4 Knowledge of: the limits of retry: retries are ineffective when the required information is simply absent from the source document (vs format or structural errors)",
+      "select_instruction": "",
+      "stem": "Validation fails on two groups. In one, `effective_date` returns as `03/04/2026` where ISO 8601 is expected. In the other, `counterparty_registration` is empty because it appears only in an annex that was never part of the input. The team raises the retry limit with validation feedback attached. What will that achieve?",
+      "options": {
+        "A": "It resolves both groups, since retry with feedback is the standard remedy.",
+        "B": "It fixes the dates and pushes the model to invent registration numbers.",
+        "C": "It resolves neither, since retries only address transient API failures.",
+        "D": "It fixes the registration group by forcing a closer read of the source."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Retry with feedback is genuinely the remedy for the date group, and applying it to the second group misreads a missing document as a formatting mistake.",
+        "B": "A format error is correctable from the same source; a value that is not in the input can only be satisfied by making one up.",
+        "C": "Retry with validation feedback is squarely aimed at semantic and format errors, not just transport failures.",
+        "D": "No amount of re-reading recovers a number that lives in an annex nobody supplied."
+      },
+      "distractor_families": {
+        "A": "correct for one group, generalized to both",
+        "C": "understates what retry is for",
+        "D": "assumes information that is absent"
+      },
+      "why": "Retry repairs shape; it cannot supply what the source never contained.",
+      "revision": 1
+    },
+    {
+      "id": 56,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.4",
+      "guide_anchor": "4.4 Skills in: designing self-correction validation flows: extracting 'calculated_total' alongside 'stated_total' to flag discrepancies",
+      "select_instruction": "",
+      "stem": "Discrepancies between a document's stated total and its itemized amounts must surface before records reach the ledger. The extraction itself is schema-compliant. Which design does that?",
+      "options": {
+        "A": "Extract a calculated total beside the stated one and flag any difference.",
+        "B": "Add a required boolean the model sets after checking its own arithmetic.",
+        "C": "Restrict the total field in the schema to two-decimal numeric values.",
+        "D": "Retry the extraction whenever the ledger rejects an incoming record."
+      },
+      "key": [
+        "A"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "Capturing both numbers turns an invisible disagreement into a field comparison that code can evaluate.",
+        "B": "A self-assessed boolean asks the model to grade the arithmetic it just performed, in the same pass that produced the error.",
+        "C": "A numeric constraint governs the format of the total, never whether it matches the items above it.",
+        "D": "Reacting to ledger rejections is detection after the record has already left the pipeline."
+      },
+      "distractor_families": {
+        "B": "self-assessment as verification",
+        "C": "format constraint for a semantic problem",
+        "D": "detection after the fact"
+      },
+      "why": "Extract both values and let the comparison be mechanical.",
+      "revision": 1
+    },
+    {
+      "id": 57,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.2",
+      "guide_anchor": "4.2 Skills in: using few-shot examples to demonstrate correct handling of varied document structures (inline citations vs bibliographies)",
+      "select_instruction": "",
+      "stem": "Research papers cite sources in two ways: inline in the body, or gathered in a bibliography. Extraction of the citation fields is consistent within each style but differs between them, and the schema is satisfied in both cases. What addresses this?",
+      "options": {
+        "A": "Tighten the citation field definitions in the extraction schema.",
+        "B": "Post-process the extracted citations into one common shape.",
+        "C": "Retry extraction with validation feedback when the style differs.",
+        "D": "Give few-shot examples of correct extraction from both structures."
+      },
+      "key": [
+        "D"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "The schema is already satisfied by both outputs, so tightening it constrains a shape that is not what varies.",
+        "B": "Normalizing afterwards standardizes the output while leaving the model interpreting the two structures differently.",
+        "C": "Feedback needs a validation failure to fire on, and both styles pass validation.",
+        "D": "Two worked examples show what the same fields look like when the document is laid out each way, which is exactly the ambiguity in play."
+      },
+      "distractor_families": {
+        "A": "constrains the shape, not the interpretation",
+        "B": "band-aid downstream",
+        "C": "requires a failure that never occurs"
+      },
+      "why": "When interpretation varies with document structure, show the model both structures.",
+      "revision": 1
+    },
+    {
+      "id": 58,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D4",
+      "task": "4.5",
+      "guide_anchor": "4.5 Skills in: handling batch failures by resubmitting only failed documents identified by custom_id with appropriate modifications; using prompt refinement on a sample set before batch-processing large volumes",
+      "select_instruction": "Select two",
+      "stem": "A batch of 12,000 documents returns with 400 failures caused by exceeding the context limit. A 50,000-document run is planned for next month. Which two actions are appropriate?",
+      "options": {
+        "A": "Split the coming run into five batches so that failures stay contained.",
+        "B": "Refine the prompt on a sample set before the 50,000-document run.",
+        "C": "Resubmit the full batch with chunking applied to every document.",
+        "D": "Resubmit only the failures, keyed by `custom_id`, once chunked."
+      },
+      "key": [
+        "B",
+        "D"
+      ],
+      "multi_answer": true,
+      "negative": false,
+      "explanations": {
+        "A": "Splitting bounds the blast radius without improving the first-pass rate, so the same proportion still fails.",
+        "B": "Refining on a sample is what keeps a 50,000-document run from repeating this at four times the scale.",
+        "C": "Reprocessing 11,600 successful documents pays for work already done, and chunking documents that fit degrades them for no reason.",
+        "D": "The correlation id exists precisely so failures can be identified and reprocessed on their own."
+      },
+      "distractor_families": {
+        "A": "contains the symptom, not the cause",
+        "C": "reprocesses successful work"
+      },
+      "why": "Reprocess only what failed, and fix the prompt before you scale it up.",
+      "revision": 1
+    },
+    {
+      "id": 59,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D5",
+      "task": "5.5",
+      "guide_anchor": "5.5 Knowledge of: the risk that aggregate accuracy metrics may mask poor performance on specific document types or fields; analyzing accuracy by document type and field before reducing human review",
+      "select_instruction": "",
+      "stem": "Before removing human review for one document type, the team measures 96% field-level accuracy across all document types combined, which clears the agreed threshold. What should govern the decision?",
+      "options": {
+        "A": "The 96% figure, since it already exceeds the threshold the team agreed.",
+        "B": "Accuracy measured on that document type alone, which the aggregate hides.",
+        "C": "The agent's self-reported confidence on that type over a sampling window.",
+        "D": "The overall rate at which reviewers currently change the agent's output."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "An aggregate over all types can clear a threshold while the one type being automated sits well below it.",
+        "B": "The decision is scoped to one document type, so the evidence has to be scoped the same way.",
+        "C": "Self-reported confidence is the model's own estimate, and it needs calibration against labeled data before it means anything.",
+        "D": "An overall change rate is another aggregate, and it inherits the same masking problem as the accuracy figure."
+      },
+      "distractor_families": {
+        "A": "aggregate masking a segment",
+        "C": "uncalibrated self-report",
+        "D": "a different aggregate, same flaw"
+      },
+      "why": "Measure the segment you are automating, not the average that contains it.",
+      "revision": 1
+    },
+    {
+      "id": 60,
+      "scenario": "Structured Data Extraction",
+      "scenario_intro": "You are building a structured data extraction pipeline that converts documents into JSON records.",
+      "domain": "D5",
+      "task": "5.5",
+      "guide_anchor": "5.5 Skills in: routing extractions with low model confidence or ambiguous/contradictory source documents to human review, prioritizing limited reviewer capacity",
+      "select_instruction": "",
+      "stem": "An extraction cannot determine a value because the source wording is genuinely ambiguous, and the downstream system expects the field to be populated. What should the pipeline do?",
+      "options": {
+        "A": "Return the most likely reading, with a note recording the ambiguity.",
+        "B": "Return the designated \"unclear\" value and flag the record for review.",
+        "C": "Leave the field empty and let the downstream system decide what to do.",
+        "D": "Retry the extraction until it produces a determinate, populated value."
+      },
+      "key": [
+        "B"
+      ],
+      "multi_answer": false,
+      "negative": false,
+      "explanations": {
+        "A": "A guess with a footnote is still a guess in the field, and downstream consumers read the field rather than the note.",
+        "B": "Ambiguity is recorded as itself, the record still satisfies the schema, and a human is directed to the case that needs judgment.",
+        "C": "An empty field pushes an interpretation decision onto a system with less context than the extractor had.",
+        "D": "Repetition against ambiguous wording produces a confident answer without producing a correct one."
+      },
+      "distractor_families": {
+        "A": "guess with a disclaimer",
+        "C": "defers the judgment downstream",
+        "D": "repetition as resolution"
+      },
+      "why": "Say that it is unclear, and send the case to someone who can decide.",
+      "revision": 1
+    }
+  ]
+}
