@@ -58,7 +58,14 @@ Then build the queue:
   mix approximates the blueprint weights below, rather than taking the first N
   at random
 
-Record the start time before presenting the first item.
+Before the first item, state the time budget and hand timing to the user:
+
+> The full set is written for 120 minutes, about two minutes an item. Start your
+> own timer now if you want one.
+
+You cannot measure elapsed time between turns, so never report a duration and
+never estimate one. Saying how long the sitting should take is useful; inventing
+how long it did take is not.
 
 ## Step 3 · Run
 
@@ -88,14 +95,34 @@ user's approval.
 
 ## Step 4 · Score
 
-Stop the clock. An item counts as correct only when the selected letters match
-the key exactly; a multi-answer item with one of two right is wrong.
+An item counts as correct only when the selected letters match the key exactly;
+a multi-answer item with one of two right is wrong.
 
-Report:
+**How you report depends on how many items were answered, because a rate needs
+a sample and a short run does not have one.** Ten items spread across five
+domains give two items each, and no percentage computed from two items means
+anything. Reporting one anyway is the error the whole set was rebuilt to avoid.
+
+### Fewer than 25 items answered: no percentages at all
+
+```
+Items          C / N
+
+Misses by frame
+  Output Reliability          2
+  Orchestration               1
+  Configuration Placement     1
+```
+
+Count each missed item under the frame that covers it, using the table in step
+5. Report counts, never percentages, and never a per-domain figure. A run this
+size produces a direction, not a measurement, and the report should look like a
+direction.
+
+### 25 items or more: the domain breakdown
 
 ```
 Items          C / N  (P%)
-Time           MM:SS      (the full set is written for 120 minutes)
 
 By domain
   D1  Agentic Architecture & Orchestration     c/n  (p%)
@@ -105,24 +132,27 @@ By domain
   D5  Context Management & Reliability         c/n  (p%)
 ```
 
-Show only domains that appeared in the run. For any domain with fewer than five
-items answered, print `too few items to read` in place of a percentage rather
-than a figure that will be over-read.
+Show only domains that appeared. For any domain with fewer than five items
+answered, print `too few items` in place of a percentage.
 
-**Do not report a scaled score, and do not print a pass or fail verdict.** The
-scoring scale belongs to the certification, and a number from a practice set
-that looks like an official one invites a false conclusion in either direction.
-Report the domain breakdown, which is the part that tells the user what to do
-next.
+**In both modes, do not report a scaled score and do not print a pass or fail
+verdict.** The scoring scale belongs to the certification, and a number from a
+practice set that looks like an official one invites a false conclusion in
+either direction.
 
 ## Step 5 · Point somewhere
 
 List every missed item as: number, the correct letters, and its `why` line.
 
-Then name the weakest domain by percentage among those with five or more items,
-and route the user to the frame that covers it in `frame-map/README.md`:
+Then name one frame to read, and only one:
 
-| Domain | Frame |
+- **Short run:** the frame with the most misses. On a tie, take the frame whose
+  misses came from more than one scenario, since a pattern that survives a
+  change of setting is the more useful signal.
+- **Long run:** the frame covering the weakest domain among those with five or
+  more items.
+
+| Domain | Frame in `frame-map/README.md` |
 |---|---|
 | D1 | Orchestration, and Execution Mode |
 | D2 | Output Reliability |

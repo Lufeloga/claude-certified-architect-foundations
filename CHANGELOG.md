@@ -9,6 +9,13 @@ The set carries a `set_version` in `questions.json`.
 - **Major** rises when a key changes or an item is withdrawn. If you sat the set
   under a previous major version, the entries below are the ones to revisit.
 
+## Unreleased
+
+- The runner reports counts and a frame to read on runs under 25 items, instead
+  of per-domain percentages computed from two or three answers.
+- It states the time budget and leaves the clock to the reader, rather than
+  reporting a duration it cannot measure.
+
 ## 1.0.0
 
 First public release.
