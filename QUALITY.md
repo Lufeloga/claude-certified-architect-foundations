@@ -117,6 +117,10 @@ Recorded because the list is more useful than the assurance.
    describes itself and cites the published guide, nothing else.
 7. **Mixed spelling conventions.** British and American spellings appeared in
    the same document set. `tools/lint_prose.py` now enforces one.
+8. **A dead link to the official Exam Guide.** The single most important
+   outbound link in the repository pointed at a page that returns 404. It was
+   written from memory and never opened. `tools/check_links.py` now resolves
+   every link in every document.
 
 ## Reproducing this
 
@@ -125,7 +129,8 @@ python3 tools/build.py             # regenerate every format from questions.json
 python3 tools/audit_keys.py        # 13 structural and statistical checks
 python3 tools/heuristic_solver.py  # the blind attack above
 python3 tools/lint_prose.py        # spelling, terminology, personal data
+python3 tools/check_links.py       # every link resolves
 ```
 
-All four must pass before a change is merged, and none of them needs anything
+All five must pass before a change is merged, and none of them needs anything
 beyond Python 3.

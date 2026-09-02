@@ -7,7 +7,7 @@ misbehaving, sometimes a design choice where no option is obviously wrong, and
 ask for the best decision. This map turns that into three moves: read the
 situation, open the frame it belongs to, apply its reflex.
 
-It complements the official [Exam Guide](https://www.anthropic.com/learn/certification).
+It complements the official [Exam Guide](https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification).
 It does not replace it. The guide tells you what is examinable; this tells you
 how to decide once you are looking at four defensible options.
 

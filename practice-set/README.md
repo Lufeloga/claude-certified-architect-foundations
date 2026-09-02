@@ -11,7 +11,7 @@ blueprint, with an explanation for every option.
 > Independent study material. Not affiliated with, endorsed by, or reviewed by
 > Anthropic. It reproduces no exam content: every item was written from the
 > publicly published task statements in the official
-> [Exam Guide](https://www.anthropic.com/learn/certification).
+> [Exam Guide](https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification).
 
 ## How to use it
 

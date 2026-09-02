@@ -16,7 +16,7 @@ and published so they are useful to someone else.
 > Independent study material. Not affiliated with, endorsed by, or reviewed by
 > Anthropic. It reproduces no exam content: every item was written from the
 > publicly published task statements in the official
-> [Exam Guide](https://www.anthropic.com/learn/certification), which you should
+> [Exam Guide](https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification), which you should
 > read first. The frame and lens names are study scaffolding invented here, not
 > official terminology.
 

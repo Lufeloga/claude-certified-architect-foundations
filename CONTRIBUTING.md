@@ -40,9 +40,10 @@ python3 tools/build.py
 python3 tools/audit_keys.py
 python3 tools/heuristic_solver.py
 python3 tools/lint_prose.py
+python3 tools/check_links.py
 ```
 
-All four must pass before a change is merged. They have no dependencies beyond
+All five must pass before a change is merged. They have no dependencies beyond
 Python 3.
 
 ## House rules for new or rewritten items
