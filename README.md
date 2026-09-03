@@ -22,7 +22,7 @@ flowchart TD
         A["Clone the repo"] --> B["Open Claude Code<br/>in that folder"]
     end
     subgraph each["Every sitting"]
-        C["Type /ccar-f-practice 10"] --> D["Answer with a letter<br/>no feedback until the end"]
+        C["Type /ccar-f-practice<br/>10, 20, 30 or all 60"] --> D["Answer with letters only<br/>no feedback until the end"]
         D --> E["Your score by domain,<br/>and the frame to read next"]
     end
     B --> C
