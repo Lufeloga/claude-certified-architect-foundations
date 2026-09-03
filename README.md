@@ -13,6 +13,21 @@ and published so they are useful to someone else.
   timer, scores by domain, and points you at the frame that covers your weakest
   one.
 
+Sitting the set is two commands and no setup, because the skill ships inside the
+repository:
+
+```mermaid
+flowchart TD
+    subgraph once["Do this once"]
+        A["Clone the repo"] --> B["Open Claude Code<br/>in that folder"]
+    end
+    subgraph each["Every sitting"]
+        C["Type /ccar-f-practice 10"] --> D["Answer with a letter<br/>no feedback until the end"]
+        D --> E["Your score by domain,<br/>and the frame to read next"]
+    end
+    B --> C
+```
+
 > Independent study material. Not affiliated with, endorsed by, or reviewed by
 > Anthropic. It reproduces no exam content: every item was written from the
 > publicly published task statements in the official
