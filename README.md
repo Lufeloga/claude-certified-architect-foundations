@@ -30,6 +30,18 @@ recognition is not the thing that has to hold on the day.
 Then read the answers in full, including for the items you got right. Then take
 your weakest domain to the Frame Map and read the frame that covers it.
 
+```mermaid
+flowchart LR
+    A["60 questions"] -->|"sat cold, on a timer"| B["Your answers"]
+    B -->|"scored by domain"| C["Your weakest domain"]
+    C -->|"routes to"| D["One frame, of seven"]
+    D -->|"read it, then re-run scoped"| A
+```
+
+The two pieces are one loop. The questions are not a test you pass, they are the
+instrument that tells you which frame to read, and the frame is what changes the
+next result. Most study material stops at the first arrow.
+
 ## Run it in Claude Code
 
 ```bash
